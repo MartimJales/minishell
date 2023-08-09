@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 10:17:18 by mjales            #+#    #+#             */
-/*   Updated: 2023/08/03 19:55:12 by mjales           ###   ########.fr       */
+/*   Updated: 2023/08/10 00:56:45 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,12 @@ int	main(int argc, char **argv, char **envp)
 	(void)argc;
     
 	(void)envp;
+    vars()->path_arg = create_path(envp);
+    vars()->envp = envp;
+    for (int i = 0; vars()->path_arg[i]; i++)
+    {
+        printf("%s\n", vars()->path_arg[i]);
+    }
     while (1)
 	{
 		vars()->num_sc = 14;
@@ -52,6 +58,9 @@ int	main(int argc, char **argv, char **envp)
         add_history(vars()->s);
 		elems()->s = vars()->s;
 		lexer(envp);
+        if(fork1() == 0)
+            ft_exec(*vars()->tokens); // Agora metemos apenas o exec, no futuro vamos ter o runcmd
+        wait(0);
         // free_tokens(vars()->tokens);
 	}
 (void)argc;

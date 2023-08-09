@@ -13,12 +13,15 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-#include <string.h>
+# include <string.h>
 # include <stdio.h>
 # include <unistd.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <stdlib.h>
+# include <sys/types.h>
+# include <sys/wait.h>
+
 
 #define DEF 0
 #define SQ 1
@@ -43,6 +46,8 @@ typedef struct s_vars
 	char	*s;
 	t_list  *tokens;
 	char	**sc;
+    char	**path_arg;
+    char    **envp;
 	int		num_sc;
     int     token_len;
 }	t_vars;
@@ -63,6 +68,18 @@ char	*ft_strnstr(const char *big, const char *little, size_t len);
 size_t	is_delimiter(const char *s, char **sc, size_t *len);
 size_t	next_pos_sc(char const *s, char **sc);
 char	**split_sc(char const *s, char **sc);
+char	**create_path(char *envp[]);
+char	**check_path(t_list *args, char **path_arg);
+char	*junta_strings(char *s1, char *s2);
+char	*ft_strjoin(char const *s1, char const *s2);
+char	**ft_split(char const *s, char c);
+
+//MIT functions
+int fork1(void);
+char **list_to_array(t_list *lst);
+
+//EXEC functions
+int    ft_exec(t_list args);
 
 //Linked Lists functions
 void	ft_lstadd_back(t_list **lst, t_list *new);

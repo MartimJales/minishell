@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 13:00:05 by mjales            #+#    #+#             */
-/*   Updated: 2023/08/03 20:11:55 by mjales           ###   ########.fr       */
+/*   Updated: 2023/08/10 00:54:53 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -285,5 +285,5 @@ void lexer(char **envp)
     find_dollar(envp);    
 
     subdivide_tokens();
-    free_tokens();
+    // free_tokens();
 } 

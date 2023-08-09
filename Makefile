@@ -18,6 +18,8 @@ SRCS        :=      src/aux.c \
                           src/main.c \
                           src/lexer.c \
 						  src/llist.c \
+						  src/exec.c \
+						  src/mit.c \
 
 OBJS        := $(SRCS:.c=.o)
 
