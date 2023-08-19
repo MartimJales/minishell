@@ -73,6 +73,7 @@ char	**check_path(t_list *args, char **path_arg);
 char	*junta_strings(char *s1, char *s2);
 char	*ft_strjoin(char const *s1, char const *s2);
 char	**ft_split(char const *s, char c);
+void	free_tokens(void);
 
 //MIT functions
 int fork1(void);

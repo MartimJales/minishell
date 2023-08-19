@@ -34,10 +34,10 @@ int	main(int argc, char **argv, char **envp)
 	(void)envp;
     vars()->path_arg = create_path(envp);
     vars()->envp = envp;
-    for (int i = 0; vars()->path_arg[i]; i++)
-    {
-        printf("%s\n", vars()->path_arg[i]);
-    }
+    // for (int i = 0; vars()->path_arg[i]; i++)
+    // {
+    //     printf("%s\n", vars()->path_arg[i]);
+    // }
     while (1)
 	{
 		vars()->num_sc = 14;
@@ -61,7 +61,7 @@ int	main(int argc, char **argv, char **envp)
         if(fork1() == 0)
             ft_exec(*vars()->tokens); // Agora metemos apenas o exec, no futuro vamos ter o runcmd
         wait(0);
-        // free_tokens(vars()->tokens);
+        free_tokens();
 	}
 (void)argc;
 (void)argv;

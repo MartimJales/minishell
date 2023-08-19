@@ -226,7 +226,7 @@ void subdivide_tokens(void)
             current = current->next;
         }
         vars()->tokens = new_tokens;
-    print_tokens();
+    // print_tokens();
     }
 }
 
