@@ -38,11 +38,15 @@ int	main(int argc, char **argv, char **envp)
     // {
     //     printf("%s\n", vars()->path_arg[i]);
     // }
+    signal(SIGINT, signal_cmd);
+	signal(SIGQUIT, SIG_IGN);
     while (1)
 	{
 		vars()->num_sc = 14;
         create_sc();
 		vars()->s = readline("minishell>");
+        signal(SIGINT, signal_cmd);
+		signal(SIGQUIT, SIG_IGN);
         if (vars()->s == NULL)
             break ;
         if (strcmp(vars()->s, "exit") == 0)

@@ -263,3 +263,20 @@ char	**create_path(char *envp[])
 	return (path_arg);
 }
 
+void	signal_cmd(int sig)
+{
+	//g_exit_status += sig;
+	if (sig == 2)
+	{
+		//g_exit_status = 130;
+		printf("\n");
+		rl_on_new_line();
+		//rl_replace_line("", 0);
+		rl_redisplay();
+	}
+	if (sig == SIGQUIT)
+	{
+		write(2, "Quit (core dumped)\n", ft_strlen("Quit (core dumped)\n"));
+		exit (1);
+	}
+}

@@ -74,6 +74,7 @@ char	*junta_strings(char *s1, char *s2);
 char	*ft_strjoin(char const *s1, char const *s2);
 char	**ft_split(char const *s, char c);
 void	free_tokens(void);
+void	signal_cmd(int sig);
 
 //MIT functions
 int fork1(void);
