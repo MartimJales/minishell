@@ -6,16 +6,16 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 13:00:05 by mjales            #+#    #+#             */
-/*   Updated: 2023/08/10 00:54:53 by mjales           ###   ########.fr       */
+/*   Updated: 2023/08/21 20:54:51 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
-void print_tokens(void)
+void print_tokens(t_list * lst)
 {
-    t_list *current = vars()->tokens;
-
+    t_list *current = lst;
+ 
     printf("Tokens:\n");
     while (current != NULL) {
         printf("token(%d) = {%s}\n", current->content->state, current->content->s);

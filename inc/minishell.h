@@ -36,6 +36,7 @@
 #define APPEND  3
 #define HEREDOC  4
 
+#define MAXARGS 10
 
 //Structs
 typedef struct s_elems
@@ -68,11 +69,10 @@ struct cmd {
 
 struct execcmd {
   int type;
-  // char *argv[MAXARGS];
+  char **argv;
 };
 
 struct redircmd {
-  char *debug;
   int type;
   struct cmd *cmd;
   char *file;
@@ -109,7 +109,7 @@ char	*ft_strjoin(char const *s1, char const *s2);
 char	**ft_split(char const *s, char c);
 void	free_tokens(void);
 void	signal_cmd(int sig);
-void print_tokens(void);
+void print_tokens(t_list * current);
 
 //MIT functions
 int fork1(void);
@@ -125,6 +125,8 @@ t_list	*ft_lstnew(void *content);
 //Tree functions
 struct cmd *parsepipe(t_list *lst);
 struct cmd *parseredir(t_list *lst);
+struct cmd *parseexec(t_list *lst);
+
 
 
 #endif

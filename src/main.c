@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 10:17:18 by mjales            #+#    #+#             */
-/*   Updated: 2023/08/21 01:14:51 by mjales           ###   ########.fr       */
+/*   Updated: 2023/08/21 23:58:26 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,50 @@ t_elems	*elems(void)
 
 	return (&elem);
 }
+
+void debug_tree(struct cmd *root) {
+    if (!root) return ;
+
+    switch (root->type) {
+        case EXEC:
+            {
+                struct execcmd *e = (struct execcmd *)root;
+                printf("EXEC cmd:\n");
+                for (int i = 0; e->argv && e->argv[i]; i++) {
+                    printf("  argv[%d] = %s\n", i, e->argv[i]);
+                }
+            }
+            break;
+        case REDIR:
+            {
+                struct redircmd *r = (struct redircmd *)root;
+                printf("REDIR cmd:\n");
+                printf("  file: %s\n", r->file);
+                printf("  mode: %d\n", r->mode);
+                // Uncomment the line below if you add the fd field later
+                // printf("  fd: %d\n", r->fd);
+                printf("  -> Nested cmd:\n");
+                debug_tree(r->cmd);
+            }
+            break;
+        case PIPE:
+            {
+                struct pipecmd *p = (struct pipecmd *)root;
+                printf("PIPE cmd:\n");
+                printf("  -> Left cmd:\n");
+                debug_tree(p->left);
+                printf("  -> Right cmd:\n");
+                debug_tree(p->right);
+            }
+            break;
+        default:
+            printf("Unknown cmd type: %d\n", root->type);
+            break;
+    }
+}
+
+
+
 
 int	main(int argc, char **argv, char **envp)
 {
@@ -58,17 +102,19 @@ int	main(int argc, char **argv, char **envp)
         add_history(vars()->s);
 		elems()->s = vars()->s;
 		lexer(envp);
-        if(fork1() == 0)
-            ft_exec(*vars()->tokens); // Agora metemos apenas o exec, no futuro vamos ter o runcmd
-        wait(0);
-        print_tokens();
+        // if(fork1() == 0)
+        //     ft_exec(*vars()->tokens); // Agora metemos apenas o exec, no futuro vamos ter o runcmd
+        // wait(0);
+        // print_tokens();
         struct pipecmd *pipe = (struct pipecmd *)parsepipe(vars()->tokens);
-        struct redircmd *redir = NULL;
-        while (pipe->right != NULL) {
-            redir = (struct redircmd *)(pipe->left);            
-            printf("redir = {%s}\n", redir->debug);
-            pipe = (struct pipecmd *)pipe->right;
-        }
+        debug_tree((struct cmd *)pipe);
+        // struct redircmd *redir = NULL;
+        // while (pipe->right != NULL) {
+        //     redir = (struct redircmd *)(pipe->left);  
+        //     printf("redir = {%s}\n", redir->debug);
+        //     pipe = (struct pipecmd *)pipe->right;
+        // }
+        (void)pipe;
         free_tokens();
 	}
 (void)argc;
