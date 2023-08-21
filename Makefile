@@ -20,6 +20,7 @@ SRCS        :=      src/aux.c \
 						  src/llist.c \
 						  src/exec.c \
 						  src/mit.c \
+						  src/tree.c \
 
 OBJS        := $(SRCS:.c=.o)
 

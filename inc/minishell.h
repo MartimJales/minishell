@@ -27,6 +27,10 @@
 #define SQ 1
 #define DQ 2
 
+#define EXEC  1
+#define REDIR 2
+#define PIPE  3
+
 //Structs
 typedef struct s_elems
 {
@@ -52,6 +56,30 @@ typedef struct s_vars
     int     token_len;
 }	t_vars;
 
+struct cmd {
+  int type;
+};
+
+struct execcmd {
+  int type;
+  // char *argv[MAXARGS];
+};
+
+struct redircmd {
+  char *debug;
+  int type;
+  struct cmd *cmd;
+  char *file;
+  int mode;
+  int fd;
+};
+
+struct pipecmd {
+  int type;
+  struct cmd *left;
+  struct cmd *right;
+};
+
 //Lexer functions
 void lexer(char **envp);
 void find_dollar(char** envp);
@@ -75,6 +103,7 @@ char	*ft_strjoin(char const *s1, char const *s2);
 char	**ft_split(char const *s, char c);
 void	free_tokens(void);
 void	signal_cmd(int sig);
+void print_tokens(void);
 
 //MIT functions
 int fork1(void);
@@ -86,5 +115,10 @@ int    ft_exec(t_list args);
 //Linked Lists functions
 void	ft_lstadd_back(t_list **lst, t_list *new);
 t_list	*ft_lstnew(void *content);
+
+//Tree functions
+struct cmd *parsepipe(t_list *lst);
+struct cmd *parseredir(t_list *lst);
+
 
 #endif

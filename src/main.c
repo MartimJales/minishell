@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 10:17:18 by mjales            #+#    #+#             */
-/*   Updated: 2023/08/10 00:56:45 by mjales           ###   ########.fr       */
+/*   Updated: 2023/08/21 01:14:51 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,6 @@ int	main(int argc, char **argv, char **envp)
 	(void)envp;
     vars()->path_arg = create_path(envp);
     vars()->envp = envp;
-    // for (int i = 0; vars()->path_arg[i]; i++)
-    // {
-    //     printf("%s\n", vars()->path_arg[i]);
-    // }
     signal(SIGINT, signal_cmd);
 	signal(SIGQUIT, SIG_IGN);
     while (1)
@@ -65,6 +61,14 @@ int	main(int argc, char **argv, char **envp)
         if(fork1() == 0)
             ft_exec(*vars()->tokens); // Agora metemos apenas o exec, no futuro vamos ter o runcmd
         wait(0);
+        print_tokens();
+        struct pipecmd *pipe = (struct pipecmd *)parsepipe(vars()->tokens);
+        struct redircmd *redir = NULL;
+        while (pipe->right != NULL) {
+            redir = (struct redircmd *)(pipe->left);            
+            printf("redir = {%s}\n", redir->debug);
+            pipe = (struct pipecmd *)pipe->right;
+        }
         free_tokens();
 	}
 (void)argc;
