@@ -31,6 +31,12 @@
 #define REDIR 2
 #define PIPE  3
 
+#define OUT  1
+#define IN 2
+#define APPEND  3
+#define HEREDOC  4
+
+
 //Structs
 typedef struct s_elems
 {
@@ -71,7 +77,7 @@ struct redircmd {
   struct cmd *cmd;
   char *file;
   int mode;
-  int fd;
+  // int fd;
 };
 
 struct pipecmd {
