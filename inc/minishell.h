@@ -21,6 +21,8 @@
 # include <stdlib.h>
 # include <sys/types.h>
 # include <sys/wait.h>
+# include <sys/stat.h>
+# include <fcntl.h>
 
 
 #define DEF 0
@@ -77,7 +79,7 @@ struct redircmd {
   struct cmd *cmd;
   char *file;
   int mode;
-  // int fd;
+  int fd;
 };
 
 struct pipecmd {
@@ -116,7 +118,7 @@ int fork1(void);
 char **list_to_array(t_list *lst);
 
 //EXEC functions
-int    ft_exec(t_list args);
+void    exec_tree(struct cmd *root);
 
 //Linked Lists functions
 void	ft_lstadd_back(t_list **lst, t_list *new);
@@ -126,6 +128,7 @@ t_list	*ft_lstnew(void *content);
 struct cmd *parsepipe(t_list *lst);
 struct cmd *parseredir(t_list *lst);
 struct cmd *parseexec(t_list *lst);
+void debug_tree(struct cmd *root);
 
 
 

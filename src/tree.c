@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/21 00:14:27 by mjales            #+#    #+#             */
-/*   Updated: 2023/08/22 00:14:35 by mjales           ###   ########.fr       */
+/*   Updated: 2023/08/22 14:00:34 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,11 @@ struct cmd *parsepipe(t_list *lst)
     pipe->type = PIPE;
     t_list *current = begin;    
     if (lst->next){
+        printf("nao pode cair aqui\n");
         pipe->right = parsepipe(lst->next->next);
     }
     else  {
+        printf("cai aqui\n");
         pipe->left = parseredir(current);
         pipe->right = NULL;
         return (struct cmd*)pipe;
@@ -52,6 +54,19 @@ int ft_redir_signal(char *s)
     return 0; 
 }
 
+int redir_mode(int redir_signal)
+{
+    if (redir_signal == IN)
+        return (O_RDONLY);
+    if (redir_signal == OUT)
+        return (O_WRONLY|O_CREAT|O_TRUNC);
+    if (redir_signal == APPEND)
+        return (O_WRONLY|O_CREAT);
+    if (redir_signal == HEREDOC) // Temos que adicionar isto amis tarde
+        return (HEREDOC);
+    return (0);
+}
+
 struct cmd *create_redircmd(t_list *lst, char *filename, int redir_signal)
 {
     struct redircmd *cmd;
@@ -60,7 +75,13 @@ struct cmd *create_redircmd(t_list *lst, char *filename, int redir_signal)
     memset(cmd, 0, sizeof(*cmd));
     cmd->type = REDIR;
     cmd->file = filename;
-    cmd->mode = redir_signal;
+    cmd->mode = redir_mode(redir_signal);
+    if (redir_signal == IN || redir_signal == HEREDOC)
+        cmd->fd = 0;
+    else if (redir_signal == OUT || redir_signal == APPEND)
+        cmd->fd = 1;
+    else 
+        cmd->fd = 2;
     cmd->cmd = parseredir(lst);
     return (struct cmd*)cmd;
 }
