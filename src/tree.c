@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/21 00:14:27 by mjales            #+#    #+#             */
-/*   Updated: 2023/08/22 14:00:34 by mjales           ###   ########.fr       */
+/*   Updated: 2023/08/23 02:35:57 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,11 +27,9 @@ struct cmd *parsepipe(t_list *lst)
     pipe->type = PIPE;
     t_list *current = begin;    
     if (lst->next){
-        printf("nao pode cair aqui\n");
         pipe->right = parsepipe(lst->next->next);
     }
     else  {
-        printf("cai aqui\n");
         pipe->left = parseredir(current);
         pipe->right = NULL;
         return (struct cmd*)pipe;

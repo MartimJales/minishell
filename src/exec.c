@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 00:16:50 by mjales            #+#    #+#             */
-/*   Updated: 2023/08/22 14:06:17 by mjales           ###   ########.fr       */
+/*   Updated: 2023/08/23 02:44:49 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,22 +17,68 @@
         // wait(0);
         // print_tokens();
 
+void exec_pipe(struct pipecmd *pcmd) {
+    int pipefd[2];
+
+    if (pipe(pipefd) == -1) {
+        perror("pipe");
+        exit(EXIT_FAILURE);
+    }
+
+    pid_t cpid2 = fork();
+    if (cpid2 < 0) {
+        perror("fork");
+        exit(EXIT_FAILURE);
+    }
+
+    if (cpid2 == 0) { /* Child 2 (right side of the pipe) */
+        close(pipefd[1]);   // close write end
+        dup2(pipefd[0], STDIN_FILENO);  // redirect stdin to read end of pipe
+        close(pipefd[0]);
+
+        exec_tree(pcmd->right);
+        exit(EXIT_SUCCESS);
+    }
+
+    pid_t cpid1 = fork();
+    if (cpid1 < 0) {
+        perror("fork");
+        exit(EXIT_FAILURE);
+    }
+
+    if (cpid1 == 0) { /* Child 1 (left side of the pipe) */
+        close(pipefd[0]);   // close read end
+        dup2(pipefd[1], STDOUT_FILENO);  // redirect stdout to write end of pipe
+        close(pipefd[1]);
+
+        exec_tree(pcmd->left);
+        exit(EXIT_SUCCESS);
+    } 
+
+    // Parent process
+    close(pipefd[0]);
+    close(pipefd[1]);
+    wait(NULL);  // wait for child 1
+    wait(NULL);  // wait for child 2
+}
+
 void exec_tree(struct cmd *root) {
     if (!root) return ;
 
     switch (root->type) {
         case EXEC:
             {
-                struct execcmd *e = (struct execcmd *)root;
-                printf("vamos executar isto: %s\n", e->argv[0]);
-                if (!e->argv[0])
+                struct execcmd *ecmd = (struct execcmd *)root;
+                // perror("vamos executar um comando\n");
+                if (!ecmd->argv[0])
                     exit(1); // Caso em que não recebemos nenhum comando
-                execve(e->argv[0], e->argv, vars()->envp);
-                printf("exec %s failed\n", e->argv[0]); // Temos que mandar isto para o stderror
+                execve(ecmd->argv[0], ecmd->argv, vars()->envp);
+                printf("exec %s failed\n", ecmd->argv[0]); // Temos que mandar isto para o stderror
             }
             break;
         case REDIR:
             {
+                // perror("vamos redirecionar algo\n");
                 // tratamento do redir
                 struct redircmd *rcmd = (struct redircmd*)root;
                 close(rcmd->fd);
@@ -46,11 +92,12 @@ void exec_tree(struct cmd *root) {
         break;
         case PIPE:
             {
-                struct pipecmd *p = (struct pipecmd *)root;
-                if (p->right){
-                    // tratamento do pipe
+                // perror("vamos mexer nas canalizações\n");
+                struct pipecmd *pcmd = (struct pipecmd *)root;
+                if (!pcmd->right){
+                    exec_tree(pcmd->left);
                 }
-                exec_tree(p->left);
+                exec_pipe(pcmd);
             }
             break;
         default:

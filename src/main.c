@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 10:17:18 by mjales            #+#    #+#             */
-/*   Updated: 2023/08/22 13:25:33 by mjales           ###   ########.fr       */
+/*   Updated: 2023/08/23 03:21:48 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ int	main(int argc, char **argv, char **envp)
 		elems()->s = vars()->s;
 		lexer(envp);
         struct cmd *tree = parsepipe(vars()->tokens);
-        debug_tree(tree);
+        // debug_tree(tree);
         exec_tree(tree);
         free_tokens();
 	}

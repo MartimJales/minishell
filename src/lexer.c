@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 13:00:05 by mjales            #+#    #+#             */
-/*   Updated: 2023/08/21 20:54:51 by mjales           ###   ########.fr       */
+/*   Updated: 2023/08/23 03:26:11 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -226,8 +226,8 @@ void subdivide_tokens(void)
             current = current->next;
         }
         vars()->tokens = new_tokens;
-    // print_tokens();
     }
+    // print_tokens(vars()->tokens);
 }
 
 void free_tokens(void)
@@ -281,7 +281,7 @@ void lexer(char **envp)
             }
 		}
 	}
-    ft_lstadd_back(&vars()->tokens, create_token(old, i, state));                
+    ft_lstadd_back(&vars()->tokens, create_token(old, i, state));     // Esta linha está a criar um token a mais para as aspas!!!           
     find_dollar(envp);    
 
     subdivide_tokens();
