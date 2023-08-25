@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/21 00:14:27 by mjales            #+#    #+#             */
-/*   Updated: 2023/08/23 02:35:57 by mjales           ###   ########.fr       */
+/*   Updated: 2023/08/24 20:30:33 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,8 @@ struct cmd *parseredir(t_list *lst)
         return NULL;
     while (lst)
     {
-        redir_signal = ft_redir_signal(lst->content->s);
+        if (lst->content->state == DEF)
+            redir_signal = ft_redir_signal(lst->content->s);
         if (redir_signal != 0)
         {
             prev->next = prev->next->next->next;

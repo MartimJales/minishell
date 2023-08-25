@@ -6,16 +6,11 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 00:16:50 by mjales            #+#    #+#             */
-/*   Updated: 2023/08/23 02:44:49 by mjales           ###   ########.fr       */
+/*   Updated: 2023/08/24 02:16:05 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
-
-        // if(fork1() == 0)
-        //     ft_exec(*vars()->tokens); // Agora metemos apenas o exec, no futuro vamos ter o runcmd
-        // wait(0);
-        // print_tokens();
 
 void exec_pipe(struct pipecmd *pcmd) {
     int pipefd[2];

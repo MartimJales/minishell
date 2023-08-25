@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 13:00:05 by mjales            #+#    #+#             */
-/*   Updated: 2023/08/23 03:26:11 by mjales           ###   ########.fr       */
+/*   Updated: 2023/08/24 20:43:21 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void print_tokens(t_list * lst)
 
 int is_special(const char *str, char **special) {
     for (int i = 0; i < vars()->num_sc; i++) {
-        if (strncmp(str, vars()->sc[i], strlen(str)) == 0) {
+        if (strncmp(str, vars()->sc[i], strlen(vars()->sc[i])) == 0) {
             *special = vars()->sc[i];
             return strlen(vars()->sc[i]);
         }
@@ -43,12 +43,14 @@ size_t	ft_strlen(const char *str)
 	return (i);
 }
 
-char *exp_dollar(char *s, char **envp)
+char *exp_dollar(char *s, char **envp
+)
 {
     char	*path;
     int     i;
 
     i = 0;
+    s = junta_strings(s, "=");
 	while (envp[i])
 	{
 		path = ft_strnstr(envp[i], s, ft_strlen(s));
@@ -56,7 +58,9 @@ char *exp_dollar(char *s, char **envp)
 			break ;
 		i++;
 	}
-    return (path + ft_strlen(s) + 1);
+    if (!path)
+        return "$";
+    return (path + ft_strlen(s));
 }
 
 
@@ -92,18 +96,15 @@ char* replace_dollar(const char* input, char **envp) {
             str_aux = malloc(j - start + 1);
             strncpy(str_aux, input + start, j - start);
             str_aux[j - start] = '\0';
-
             char* export = exp_dollar(str_aux, envp);
             strcat(result + index_result, export);
             index_result += strlen(export);
             i = j - 1; // Atualizar o índice principal para refletir a mudança
-            free(str_aux);
         } else {
             result[index_result++] = input[i];
         }
     }
-
-    result[index_result] = '\0';
+    result[index_result] = '\0';        
     return result;
 }
 
@@ -113,7 +114,8 @@ void find_dollar(char** envp)
     aux = vars()->tokens;
     while(aux != NULL)
     {
-        aux->content->s = replace_dollar(aux->content->s, envp);
+        if (aux->content->state != SQ)
+            aux->content->s = replace_dollar(aux->content->s, envp);
         aux = aux->next;
     }
 }
@@ -206,7 +208,6 @@ void subdivide_tokens(void)
             // Subdividir por espaços em branco se o estado for DEF
             if (state == DEF && !is_special(current->content->s, vars()->sc)) {
                 char **subtokens = ft_split(current->content->s, ' ');
-
                 for (size_t i = 0; subtokens[i] != NULL; i++) {
                     char *part = subtokens[i];
                     if (strstr(part, vars()->sc[j])) {
@@ -243,6 +244,32 @@ void free_tokens(void)
     vars()->tokens = NULL; // Certifique-se de definir a lista de tokens como NULL depois de liberar
 }
 
+void junta_tokens(t_list *lst)
+{
+    t_list *cur = lst;
+    t_list *prev = malloc(sizeof(t_list *));
+    
+    prev->next = lst;
+    while (cur && cur->next)
+    {
+        // If current token is not space and next token is also not a space
+        if (strcmp(cur->content->s, " ") != 0 && strcmp(cur->next->content->s, " ") != 0)
+        {
+            char *concatenated_str = junta_strings(cur->content->s, cur->next->content->s);
+
+            cur->content->s = concatenated_str;
+
+            t_list *tmp = cur->next;
+            cur->next = tmp->next;
+        }
+        else
+        {
+            prev = cur;
+            cur = cur->next;
+        }
+    }
+}
+
 void lexer(char **envp)
 {
 	int i;
@@ -251,39 +278,61 @@ void lexer(char **envp)
 	i = -1;
 	int state;
 	state = 0;
+    int space = 0;
+    // int append = 0;
     // Loop para ver os estados das quotes
 	while (elems()->s[++i])
 	{
 		if (elems()->s[i] == '\'')
 		{
 			if (state == 0){
-                ft_lstadd_back(&vars()->tokens, create_token(old, i, state));                
+                ft_lstadd_back(&vars()->tokens, create_token(old, i, state));    
                 old = i+1;
 				state = 1;
             }
 			else if (state == 1){
-                ft_lstadd_back(&vars()->tokens, create_token(old, i, state));                
+                ft_lstadd_back(&vars()->tokens, create_token(old, i, state));    
                 old = i+1;
 				state = 0;
             }
+            space = 0;
 		}
 		else if (elems()->s[i] == '\"')
 		{
 			if (state == 0){
-                ft_lstadd_back(&vars()->tokens, create_token(old, i, state));                
+                ft_lstadd_back(&vars()->tokens, create_token(old, i, state));    
                 old = i+1;
 				state = 2;
             }
 			else if (state == 2){
-                ft_lstadd_back(&vars()->tokens, create_token(old, i, state));                
+                ft_lstadd_back(&vars()->tokens, create_token(old, i, state));    
                 old = i+1;
 				state = 0;
             }
+            space = 0;
 		}
+        else if (elems()->s[i] == ' ' && state == 0)
+        {
+            ft_lstadd_back(&vars()->tokens, create_token(old, i, state));    
+            old = i;
+			state = 0;
+            space = 1;
+        }
+        else if (space){
+            ft_lstadd_back(&vars()->tokens, create_token(old, i, state));    
+            old = i;
+			state = 0;
+            space = 0;
+        }
 	}
     ft_lstadd_back(&vars()->tokens, create_token(old, i, state));     // Esta linha está a criar um token a mais para as aspas!!!           
-    find_dollar(envp);    
+    // print_tokens(vars()->tokens);
+    find_dollar(envp);
+    
+    junta_tokens(vars()->tokens);
 
     subdivide_tokens();
-    // free_tokens();
+    // print_tokens(vars()->tokens);
 } 
+
+

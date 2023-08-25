@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 10:17:18 by mjales            #+#    #+#             */
-/*   Updated: 2023/08/23 03:21:48 by mjales           ###   ########.fr       */
+/*   Updated: 2023/08/24 20:30:56 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,10 +100,15 @@ int	main(int argc, char **argv, char **envp)
         add_history(vars()->s);
 		elems()->s = vars()->s;
 		lexer(envp);
+        // printf("MAIN\n");
+        // print_tokens(vars()->tokens);        
         struct cmd *tree = parsepipe(vars()->tokens);
         // debug_tree(tree);
-        exec_tree(tree);
-        free_tokens();
+        if(fork1() == 0)
+            exec_tree(tree);
+        wait(0);
+        free_tokens(); 
+        exit(0);// ISto é so para o tester funcionar, temos que rever isto!!!
 	}
 (void)argc;
 (void)argv;
