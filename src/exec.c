@@ -12,91 +12,72 @@
 
 #include "../inc/minishell.h"
 
-void exec_pipe(struct pipecmd *pcmd) {
-    int pipefd[2];
+void exec_single_command(struct execcmd *ecmd) {
+    if (!ecmd->argv[0])
+        exit(1);  // Case when no command is received
+    execve(ecmd->argv[0], ecmd->argv, vars()->envp);
+    fprintf(stderr, "exec %s failed\n", ecmd->argv[0]);
+    exit(EXIT_FAILURE);
+}
 
+void exec_redir(struct redircmd *rcmd) {
+    close(rcmd->fd);
+    if (open(rcmd->file, rcmd->mode, 0664) < 0) {
+        fprintf(stderr, "open %s failed\n", rcmd->file);
+        exit(EXIT_FAILURE);
+    }
+    exec_tree(rcmd->cmd);
+}
+
+// Auxiliary function for executing a pipe command
+void exec_pipe_command(struct pipecmd *pcmd) {
+    int pipefd[2];
     if (pipe(pipefd) == -1) {
         perror("pipe");
         exit(EXIT_FAILURE);
     }
-
-    pid_t cpid2 = fork();
-    if (cpid2 < 0) {
+    pid_t cpid = fork();
+    if (cpid < 0) {
         perror("fork");
         exit(EXIT_FAILURE);
     }
-
-    if (cpid2 == 0) { /* Child 2 (right side of the pipe) */
-        close(pipefd[1]);   // close write end
-        dup2(pipefd[0], STDIN_FILENO);  // redirect stdin to read end of pipe
+    if (cpid == 0) {
+        close(pipefd[1]);
+        dup2(pipefd[0], STDIN_FILENO);
         close(pipefd[0]);
-
         exec_tree(pcmd->right);
         exit(EXIT_SUCCESS);
-    }
-
-    pid_t cpid1 = fork();
-    if (cpid1 < 0) {
-        perror("fork");
-        exit(EXIT_FAILURE);
-    }
-
-    if (cpid1 == 0) { /* Child 1 (left side of the pipe) */
-        close(pipefd[0]);   // close read end
-        dup2(pipefd[1], STDOUT_FILENO);  // redirect stdout to write end of pipe
+    } else {
+        close(pipefd[0]);
+        dup2(pipefd[1], STDOUT_FILENO);
         close(pipefd[1]);
-
         exec_tree(pcmd->left);
-        exit(EXIT_SUCCESS);
-    } 
-
-    // Parent process
-    close(pipefd[0]);
-    close(pipefd[1]);
-    wait(NULL);  // wait for child 1
-    wait(NULL);  // wait for child 2
+        wait(NULL);  // Wait for child process
+    }
 }
 
 void exec_tree(struct cmd *root) {
-    if (!root) return ;
+    if (!root) return;
 
     switch (root->type) {
         case EXEC:
-            {
-                struct execcmd *ecmd = (struct execcmd *)root;
-                // perror("vamos executar um comando\n");
-                if (!ecmd->argv[0])
-                    exit(1); // Caso em que não recebemos nenhum comando
-                execve(ecmd->argv[0], ecmd->argv, vars()->envp);
-                printf("exec %s failed\n", ecmd->argv[0]); // Temos que mandar isto para o stderror
-            }
+            exec_single_command((struct execcmd *)root);
             break;
         case REDIR:
-            {
-                // perror("vamos redirecionar algo\n");
-                // tratamento do redir
-                struct redircmd *rcmd = (struct redircmd*)root;
-                close(rcmd->fd);
-                if(open(rcmd->file, rcmd->mode, 0664) < 0){
-                    printf("open %s failed\n", rcmd->file);
-                    exit(1);
-                }
-                exec_tree(rcmd->cmd);
-                break;
-            }
-        break;
+            exec_redir((struct redircmd *)root);
+            break;
         case PIPE:
             {
-                // perror("vamos mexer nas canalizações\n");
                 struct pipecmd *pcmd = (struct pipecmd *)root;
-                if (!pcmd->right){
+                if (!pcmd->right) {
                     exec_tree(pcmd->left);
+                } else {
+                    exec_pipe_command(pcmd);
                 }
-                exec_pipe(pcmd);
             }
             break;
         default:
-            printf("Unknown cmd type: %d\n", root->type);
+            fprintf(stderr, "Unknown cmd type: %d\n", root->type);
             break;
     }
 }

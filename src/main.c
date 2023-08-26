@@ -68,50 +68,57 @@ void debug_tree(struct cmd *tree)
     }
 }
 
-int	main(int argc, char **argv, char **envp)
-{
-	(void)argv;
-	(void)argc;
-    
-	(void)envp;
-    vars()->path_arg = create_path(envp);
-    vars()->envp = envp;
+void setup_signals() {
     signal(SIGINT, signal_cmd);
-	signal(SIGQUIT, SIG_IGN);
-    while (1)
-	{
-		vars()->num_sc = 14;
+    signal(SIGQUIT, SIG_IGN);
+}
+
+void cleanup() {
+    free(vars()->s);
+    free_tokens();
+}
+
+void process_and_execute(struct cmd *tree) {
+    if (fork1() == 0)
+        exec_tree(tree);
+    wait(0);
+}
+
+void process_input() {
+    while (1) {
+        vars()->num_sc = 14;
         create_sc();
-		vars()->s = readline("minishell>");
-        signal(SIGINT, signal_cmd);
-		signal(SIGQUIT, SIG_IGN);
+        vars()->s = readline("minishell>");
+        setup_signals();
         if (vars()->s == NULL)
-            break ;
-        if (strcmp(vars()->s, "exit") == 0)
-        {
-            free(vars()->s);
-            break ;
+            break;
+        if (strcmp(vars()->s, "exit") == 0) {
+            cleanup();
+            break;
         }
-        if (all_space(vars()->s))
-        {
-            free(vars()->s);
-            continue ;
+        if (all_space(vars()->s)) {
+            cleanup();
+            continue;
         }
         add_history(vars()->s);
-		elems()->s = vars()->s;
-		lexer(envp);
-        // printf("MAIN\n");
-        // print_tokens(vars()->tokens);        
+        elems()->s = vars()->s;
+        lexer(vars()->envp);
         struct cmd *tree = parsepipe(vars()->tokens);
-        // debug_tree(tree);
-        if(fork1() == 0)
-            exec_tree(tree);
-        wait(0);
-        free_tokens(); 
-        exit(0);// ISto é so para o tester funcionar, temos que rever isto!!!
-	}
-(void)argc;
-(void)argv;
-(void)envp;
-	return (0);
+        process_and_execute(tree);
+        cleanup();
+        //exit(0); // This is for the tester, needs to be reviewed
+    }
+}
+
+int main(int argc, char **argv, char **envp) {
+    (void)argc;
+    (void)argv;
+    (void)envp;
+
+    vars()->path_arg = create_path(envp);
+    vars()->envp = envp;
+
+    process_input();
+
+    return 0;
 }

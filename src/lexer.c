@@ -92,7 +92,6 @@ char* replace_dollar(const char* input, char **envp) {
             while (ft_isalnum(input[j])) {
                 j++;
             }
-
             str_aux = malloc(j - start + 1);
             strncpy(str_aux, input + start, j - start);
             str_aux[j - start] = '\0';
@@ -194,39 +193,50 @@ char	**ft_split(char const *s, char c)
 	return (arr);
 }
 
-// Ele está a trocar a ordem dos tokens, sempre que faz um loop
-void subdivide_tokens(void)
-{
-    t_list *new_tokens;
-    t_list *current = vars()->tokens;
-    for (int j = 0; j < 14; j++){
-        new_tokens = NULL;
-        current = vars()->tokens;
-        while (current != NULL) {
-            int state = current->content->state;
+t_list *add_subtoken(t_list *tokens, char *part, int state, char *sc_element) {
+    if (strstr(part, sc_element)) {
+        add_token(&tokens, strndup(part, strstr(part, sc_element) - part), state);
+        add_token(&tokens, sc_element, state);
+        add_token(&tokens, strstr(part, sc_element) + ft_strlen(sc_element), state);
+    } else {
+        add_token(&tokens, part, state);
+    }
+    return tokens;
+}
 
-            // Subdividir por espaços em branco se o estado for DEF
-            if (state == DEF && !is_special(current->content->s, vars()->sc)) {
-                char **subtokens = ft_split(current->content->s, ' ');
-                for (size_t i = 0; subtokens[i] != NULL; i++) {
-                    char *part = subtokens[i];
-                    if (strstr(part, vars()->sc[j])) {
-                        add_token(&new_tokens, strndup(part, strstr(part, vars()->sc[j]) - part), state);
-                        add_token(&new_tokens, vars()->sc[j], state);
-                        add_token(&new_tokens, strstr(part, vars()->sc[j]) + ft_strlen(vars()->sc[j]), state);
-                    } else {
-                        add_token(&new_tokens, part, state);
-                    }
-                    free(part);
-                }
-                free(subtokens);
-            }
-            else {
-                add_token(&new_tokens, current->content->s, state);
-            }
-            current = current->next;
+t_list *process_subtokens(t_list *current, char *sc_element, t_list *new_tokens) {
+    int state = current->content->state;
+
+    if (state == DEF && !is_special(current->content->s, vars()->sc)) {
+        char **subtokens = ft_split(current->content->s, ' ');
+        for (size_t i = 0; subtokens[i] != NULL; i++) {
+            char *part = subtokens[i];
+            new_tokens = add_subtoken(new_tokens, part, state, sc_element);
+            free(part);
         }
-        vars()->tokens = new_tokens;
+        free(subtokens);
+    } else {
+        new_tokens = add_subtoken(new_tokens, current->content->s, state, sc_element);
+    }
+
+    return new_tokens;
+}
+
+void process_special_element(int j) {
+    t_list *new_tokens = NULL;
+    t_list *current = vars()->tokens;
+
+    while (current != NULL) {
+        new_tokens = process_subtokens(current, vars()->sc[j], new_tokens);
+        current = current->next;
+    }
+
+    vars()->tokens = new_tokens;
+}
+
+void subdivide_tokens(void) {
+    for (int j = 0; j < 14; j++) {
+        process_special_element(j);
     }
     // print_tokens(vars()->tokens);
 }
@@ -270,69 +280,66 @@ void junta_tokens(t_list *lst)
     }
 }
 
-void lexer(char **envp)
-{
-	int i;
-    int old;
-    old = 0;
-	i = -1;
-	int state;
-	state = 0;
-    int space = 0;
-    // int append = 0;
-    // Loop para ver os estados das quotes
-	while (elems()->s[++i])
-	{
-		if (elems()->s[i] == '\'')
-		{
-			if (state == 0){
-                ft_lstadd_back(&vars()->tokens, create_token(old, i, state));    
-                old = i+1;
-				state = 1;
-            }
-			else if (state == 1){
-                ft_lstadd_back(&vars()->tokens, create_token(old, i, state));    
-                old = i+1;
-				state = 0;
-            }
-            space = 0;
-		}
-		else if (elems()->s[i] == '\"')
-		{
-			if (state == 0){
-                ft_lstadd_back(&vars()->tokens, create_token(old, i, state));    
-                old = i+1;
-				state = 2;
-            }
-			else if (state == 2){
-                ft_lstadd_back(&vars()->tokens, create_token(old, i, state));    
-                old = i+1;
-				state = 0;
-            }
-            space = 0;
-		}
-        else if (elems()->s[i] == ' ' && state == 0)
-        {
-            ft_lstadd_back(&vars()->tokens, create_token(old, i, state));    
-            old = i;
-			state = 0;
-            space = 1;
-        }
-        else if (space){
-            ft_lstadd_back(&vars()->tokens, create_token(old, i, state));    
-            old = i;
-			state = 0;
-            space = 0;
-        }
-	}
-    ft_lstadd_back(&vars()->tokens, create_token(old, i, state));     // Esta linha está a criar um token a mais para as aspas!!!           
-    // print_tokens(vars()->tokens);
-    find_dollar(envp);
-    
-    junta_tokens(vars()->tokens);
+void process_quote_state(int *old, int i, int *state) {
+    if (*state == 0) {
+        ft_lstadd_back(&vars()->tokens, create_token(*old, i, *state));
+        *old = i + 1;
+        *state = 1;
+    } else if (*state == 1) {
+        ft_lstadd_back(&vars()->tokens, create_token(*old, i, *state));
+        *old = i + 1;
+        *state = 0;
+    }
+}
 
+void process_double_quote_state(int *old, int i, int *state) {
+    if (*state == 0) {
+        ft_lstadd_back(&vars()->tokens, create_token(*old, i, *state));
+        *old = i + 1;
+        *state = 2;
+    } else if (*state == 2) {
+        ft_lstadd_back(&vars()->tokens, create_token(*old, i, *state));
+        *old = i + 1;
+        *state = 0;
+    }
+}
+
+void process_space_state(int *old, int i, int *state, int *space) {
+    if (*state == 0) {
+        ft_lstadd_back(&vars()->tokens, create_token(*old, i, *state));
+        *old = i;
+        *state = 0;
+        *space = 1;
+    }
+}
+
+void lexer(char **envp) {
+    int i = -1;
+    int old = 0;
+    int state = 0;
+    int space = 0;
+
+    while (elems()->s[++i]) {
+        if (elems()->s[i] == '\'') {
+            process_quote_state(&old, i, &state);
+            space = 0;
+        } else if (elems()->s[i] == '\"') {
+            process_double_quote_state(&old, i, &state);
+            space = 0;
+        } else if (elems()->s[i] == ' ' && state == 0) {
+            process_space_state(&old, i, &state, &space);
+        } else if (space) {
+            ft_lstadd_back(&vars()->tokens, create_token(old, i, state));
+            old = i;
+            state = 0;
+            space = 0;
+        }
+    }
+    ft_lstadd_back(&vars()->tokens, create_token(old, i, state));
+    find_dollar(envp);
+    junta_tokens(vars()->tokens);
     subdivide_tokens();
     // print_tokens(vars()->tokens);
-} 
+}
 
 
