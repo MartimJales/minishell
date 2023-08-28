@@ -6,11 +6,13 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 13:00:05 by mjales            #+#    #+#             */
-/*   Updated: 2023/08/24 20:43:21 by mjales           ###   ########.fr       */
+/*   Updated: 2023/08/27 23:00:41 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
+
+extern int exit_status;
 
 void print_tokens(t_list * lst)
 {
@@ -43,13 +45,15 @@ size_t	ft_strlen(const char *str)
 	return (i);
 }
 
-char *exp_dollar(char *s, char **envp
-)
+char *exp_dollar(char *s, char **envp)
 {
     char	*path;
     int     i;
 
     i = 0;
+    // printf("s = {%s}\n", s);
+    if (s == NULL)
+        return ("");
     s = junta_strings(s, "=");
 	while (envp[i])
 	{
@@ -92,10 +96,17 @@ char* replace_dollar(const char* input, char **envp) {
             while (ft_isalnum(input[j])) {
                 j++;
             }
+            if (input[j] == '?')
+                j++;
             str_aux = malloc(j - start + 1);
             strncpy(str_aux, input + start, j - start);
             str_aux[j - start] = '\0';
-            char* export = exp_dollar(str_aux, envp);
+            char* export = NULL;
+            if (strcmp(str_aux, "?") == 0) 
+                export = ft_itoa(exit_status);
+            else
+                export = exp_dollar(str_aux, envp);
+
             strcat(result + index_result, export);
             index_result += strlen(export);
             i = j - 1; // Atualizar o índice principal para refletir a mudança
@@ -111,10 +122,12 @@ void find_dollar(char** envp)
 {
     t_list *aux = vars()->tokens;
     aux = vars()->tokens;
+    // print_tokens(vars()->tokens);
     while(aux != NULL)
     {
-        if (aux->content->state != SQ)
+        if (aux->content->state != SQ) {
             aux->content->s = replace_dollar(aux->content->s, envp);
+        }
         aux = aux->next;
     }
 }
@@ -193,53 +206,89 @@ char	**ft_split(char const *s, char c)
 	return (arr);
 }
 
-t_list *add_subtoken(t_list *tokens, char *part, int state, char *sc_element) {
-    if (strstr(part, sc_element)) {
-        add_token(&tokens, strndup(part, strstr(part, sc_element) - part), state);
-        add_token(&tokens, sc_element, state);
-        add_token(&tokens, strstr(part, sc_element) + ft_strlen(sc_element), state);
-    } else {
-        add_token(&tokens, part, state);
-    }
-    return tokens;
-}
-
-t_list *process_subtokens(t_list *current, char *sc_element, t_list *new_tokens) {
-    int state = current->content->state;
-
-    if (state == DEF && !is_special(current->content->s, vars()->sc)) {
-        char **subtokens = ft_split(current->content->s, ' ');
-        for (size_t i = 0; subtokens[i] != NULL; i++) {
-            char *part = subtokens[i];
-            new_tokens = add_subtoken(new_tokens, part, state, sc_element);
-            free(part);
-        }
-        free(subtokens);
-    } else {
-        new_tokens = add_subtoken(new_tokens, current->content->s, state, sc_element);
-    }
-
-    return new_tokens;
-}
-
-void process_special_element(int j) {
-    t_list *new_tokens = NULL;
+void subdivide_tokens(void)
+{
+    t_list *new_tokens;
     t_list *current = vars()->tokens;
+    for (int j = 0; j < 14; j++){
+        new_tokens = NULL;
+        current = vars()->tokens;
+        while (current != NULL) {
+            int state = current->content->state;
 
-    while (current != NULL) {
-        new_tokens = process_subtokens(current, vars()->sc[j], new_tokens);
-        current = current->next;
-    }
-
-    vars()->tokens = new_tokens;
-}
-
-void subdivide_tokens(void) {
-    for (int j = 0; j < 14; j++) {
-        process_special_element(j);
+            // Subdividir por espaços em branco se o estado for DEF
+            if (state == DEF && !is_special(current->content->s, vars()->sc)) {
+                char **subtokens = ft_split(current->content->s, ' ');
+                for (size_t i = 0; subtokens[i] != NULL; i++) {
+                    char *part = subtokens[i];
+                    if (strstr(part, vars()->sc[j])) {
+                        add_token(&new_tokens, strndup(part, strstr(part, vars()->sc[j]) - part), state);
+                        add_token(&new_tokens, vars()->sc[j], state);
+                        add_token(&new_tokens, strstr(part, vars()->sc[j]) + ft_strlen(vars()->sc[j]), state);
+                    } else {
+                        add_token(&new_tokens, part, state);
+                    }
+                    free(part);
+                }
+                free(subtokens);
+            }
+            else {
+                add_token(&new_tokens, current->content->s, state);
+            }
+            current = current->next;
+        }
+        vars()->tokens = new_tokens;
     }
     // print_tokens(vars()->tokens);
 }
+
+// t_list *add_subtoken(t_list *tokens, char *part, int state, char *sc_element) {
+//     if (strstr(part, sc_element)) {
+//         add_token(&tokens, strndup(part, strstr(part, sc_element) - part), state);
+//         add_token(&tokens, sc_element, state);
+//         add_token(&tokens, strstr(part, sc_element) + ft_strlen(sc_element), state);
+//     } else {
+//         add_token(&tokens, part, state);
+//     }
+//     return tokens;
+// }
+
+// t_list *process_subtokens(t_list *current, char *sc_element, t_list *new_tokens) {
+//     int state = current->content->state;
+
+//     if (state == DEF && !is_special(current->content->s, vars()->sc)) {
+//         char **subtokens = ft_split(current->content->s, ' ');
+//         for (size_t i = 0; subtokens[i] != NULL; i++) {
+//             char *part = subtokens[i];
+//             new_tokens = add_subtoken(new_tokens, part, state, sc_element);
+//             free(part);
+//         }
+//         free(subtokens);
+//     } else {
+//         new_tokens = add_subtoken(new_tokens, current->content->s, state, sc_element);
+//     }
+
+//     return new_tokens;
+// }
+
+// void process_special_element(int j) {
+//     t_list *new_tokens = NULL;
+//     t_list *current = vars()->tokens;
+
+//     while (current != NULL) {
+//         new_tokens = process_subtokens(current, vars()->sc[j], new_tokens);
+//         current = current->next;
+//     }
+
+//     vars()->tokens = new_tokens;
+// }
+
+// void subdivide_tokens(void) {
+//     for (int j = 0; j < 14; j++) {
+//         process_special_element(j);
+//     }
+//     // print_tokens(vars()->tokens);
+// }
 
 void free_tokens(void)
 {

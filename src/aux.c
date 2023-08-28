@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 12:28:03 by mjales            #+#    #+#             */
-/*   Updated: 2023/08/10 00:53:14 by mjales           ###   ########.fr       */
+/*   Updated: 2023/08/27 23:36:29 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,6 +214,19 @@ char	*junta_strings(char *s1, char *s2)
 	return (s1);
 }
 
+int is_builtin(char *cmd)
+{
+	if (strcmp("export", cmd) == 0)
+    	return 1;
+    if (strcmp("cd", cmd) == 0)
+    	return 1;
+    if (strcmp("unset", cmd) == 0)
+		return 1;
+    if (strcmp("env", cmd) == 0)
+		return 1;
+	return 0;
+}
+
 char	**check_path(t_list *args, char **path_arg)
 {
 	char	**teste;
@@ -222,6 +235,8 @@ char	**check_path(t_list *args, char **path_arg)
 
 	teste = list_to_array(args);
 	i = 0;
+	if (is_builtin(teste[i]))
+		return teste;
 	while (path_arg[i])
 	{
 		buffer = malloc(ft_strlen(path_arg[i]) + 1);
@@ -279,4 +294,41 @@ void	signal_cmd(int sig)
 		write(2, "Quit (core dumped)\n", ft_strlen("Quit (core dumped)\n"));
 		exit (1);
 	}
+}
+
+char *ft_itoa(int nbr) 
+{
+	if(nbr == -2147483648)
+		return("-2147483648\0");
+	int n = nbr;
+	int len = 0;
+	if (nbr <= 0)
+	{
+		len++;
+    	}
+	while (n) 
+	{
+		n /= 10;
+		len++;
+	}
+	char *result = (char *)malloc(sizeof(char) * (len + 1));
+	if (result == NULL) 
+		return NULL;
+	result[len] = '\0';
+	if (nbr == 0)
+	{
+		result[0] = '0';
+		return(result);
+	}
+	if (nbr < 0) 
+	{
+		result[0] = '-';
+		nbr = -nbr;
+	}
+	while (nbr) 
+	{
+		result[--len] = nbr % 10 + '0';
+		nbr /= 10;
+	}
+	return result;
 }
