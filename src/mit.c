@@ -12,16 +12,6 @@
 
 #include "../inc/minishell.h"
 
-int fork1(void)
-{
-  int pid;
-
-  pid = fork();
-  if(pid == -1)
-    printf("fork"); // Temos que lançar uma função de error!!!
-  return pid;
-}
-
 char **list_to_array(t_list *lst)
 {
     int count = 0;

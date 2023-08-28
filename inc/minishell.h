@@ -44,6 +44,7 @@
 typedef struct s_elems
 {
 	char *s;
+  pid_t ppid;
 	int state;
 }	t_elems;
 
@@ -59,10 +60,11 @@ typedef struct s_vars
 	char	*s;
 	t_list  *tokens;
 	char	**sc;
-    char	**path_arg;
-    char    **envp;
+  char	**path_arg;
+  char    **envp;
 	int		num_sc;
-    int     token_len;
+  int     token_len;
+  int forked;
 }	t_vars;
 
 struct cmd {
@@ -117,7 +119,6 @@ int is_builtin(char *cmd);
 void process_and_execute(struct cmd *tree);
 
 //MIT functions
-int fork1(void);
 char **list_to_array(t_list *lst);
 
 //EXEC functions

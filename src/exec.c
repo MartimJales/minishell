@@ -72,6 +72,8 @@ int exec_export(struct execcmd *ecmd)
         i++;
     }
     exit_status = 0;
+    if (vars()->forked)
+        exit(0);
     return 0;
 }
 
@@ -99,9 +101,6 @@ int exec_builtin(struct execcmd *ecmd)
     //     return exec_unset(ecmd);
     return -1;
 }
-
-
-
 
 void exec_single_command(struct execcmd *ecmd) {
     if (!ecmd->argv[0])
@@ -139,7 +138,6 @@ void exec_pipe_command(struct pipecmd *pcmd) {
         dup2(pipefd[1], STDOUT_FILENO);
         close(pipefd[1]);
         exec_tree(pcmd->left);
-        
     } else {
         wait(0);  // Wait for child process
         close(pipefd[1]);

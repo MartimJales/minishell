@@ -51,7 +51,7 @@ void debug_tree(struct cmd *tree)
                 // Uncomment the line below if you add the fd field later
                 // printf("  fd: %d\n", r->fd);
                 printf("  -> Nested cmd:\n");
-                debug_tree(r->cmd);
+                //debug_tree(r->cmd);
             }
             break;
         case PIPE:
@@ -107,6 +107,7 @@ int is_builtin_tree(struct cmd *cmd) {
             break;
         case PIPE:
             {
+                return 0;
                 struct pipecmd *pcmd = (struct pipecmd *)cmd;
                 return is_builtin_tree(pcmd->left);  // Check the left command of the pipe
             }
@@ -125,7 +126,11 @@ void process_and_execute(struct cmd *tree)
         exec_tree(tree);
     else
     {
-        if (fork1() == 0)
+        vars()->forked = 1;
+        int pid = fork();
+        if (pid == -1)
+            perror("fork");
+        if (pid == 0)
             exec_tree(tree);
         wait(0);
     }
@@ -157,7 +162,7 @@ void process_input() {
         elems()->s = vars()->s;
         lexer(vars()->envp);
         struct cmd *tree = parsepipe(vars()->tokens);
-        // debug_tree(tree);
+        //debug_tree(tree);
         process_and_execute(tree);
         cleanup();
         // exit(exit_status); // This is for the tester, needs to be reviewed
