@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 00:16:50 by mjales            #+#    #+#             */
-/*   Updated: 2023/08/28 01:01:33 by mjales           ###   ########.fr       */
+/*   Updated: 2023/08/29 16:52:14 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,23 +57,65 @@ void add_variable_to_envp(char *new_var)
     vars()->envp = new_envp;
 }
 
+int validate_format(const char *input) {
+    const char *equal_sign = strchr(input, '=');
+
+    if (equal_sign == NULL || equal_sign == input) {
+        return 0; // No equal sign or empty VAR
+    }
+
+    size_t var_length = equal_sign - input;
+    char var[var_length + 1];
+    strncpy(var, input, var_length);
+    var[var_length] = '\0';
+
+    int i = 0;
+    // printf("var = %s\n", var);
+    while (var[i]){
+        if (!ft_isalnum(var[i]))
+            return 0; // VAR is not alphanumeric
+        i++;
+    }
+    return 1; // Format is valid
+}
+
+
+int check_alnum(const char *input_string) {
+    if (!input_string || (input_string[0] >= '0' && input_string[0] <= '9'))
+        return 0;
+    while (*input_string) {
+        if (!isalnum(*input_string)) {
+            return 0;
+        }
+        input_string++;
+    }
+    return 1;
+}
+
 int exec_export(struct execcmd *ecmd)
 {
     int i = 1;
     while (ecmd->argv[i] != NULL)
     {
-        add_variable_to_envp(ecmd->argv[i]);
-        i++;
-    }
-    while(vars()->envp[i] != NULL)
-    {
-        // printf("envp[%d] = {%s}\n", i, vars()->envp[i]);
-        // free(envp[i]);
+        // printf("split = %s\n", ft_split(ecmd->argv[i], '=')[0]);
+        if (!check_alnum(ft_split(ecmd->argv[i], '=')[0]))
+        {
+            write(2, " not a valid identifier\n", ft_strlen(" not a valid identifier\n"));
+            exit_status = 1;
+            if (vars()->forked){
+                exit(1);
+            }
+            return 1;
+        }
+        if (validate_format(ecmd->argv[i])){  
+            add_variable_to_envp(ecmd->argv[i]);
+        }
         i++;
     }
     exit_status = 0;
-    if (vars()->forked)
+    if (vars()->forked){
         exit(0);
+    }
     return 0;
 }
 
@@ -86,6 +128,8 @@ int exec_env(void)
         i++;
     }
     exit_status = 0;
+    if (vars()->forked)
+        exit(0);
     return 0;
 }
 

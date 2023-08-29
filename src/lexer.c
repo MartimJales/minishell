@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 13:00:05 by mjales            #+#    #+#             */
-/*   Updated: 2023/08/27 23:00:41 by mjales           ###   ########.fr       */
+/*   Updated: 2023/08/29 16:44:14 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -317,6 +317,8 @@ void junta_tokens(t_list *lst)
             char *concatenated_str = junta_strings(cur->content->s, cur->next->content->s);
 
             cur->content->s = concatenated_str;
+            if (cur->next->content->state > cur->content->state)
+                cur->content->state = cur->next->content->state;
 
             t_list *tmp = cur->next;
             cur->next = tmp->next;
@@ -386,8 +388,12 @@ void lexer(char **envp) {
     }
     ft_lstadd_back(&vars()->tokens, create_token(old, i, state));
     find_dollar(envp);
+    // print_tokens(vars()->tokens);
     junta_tokens(vars()->tokens);
+    // printf("JUNTA\n");
+    // print_tokens(vars()->tokens);
     subdivide_tokens();
+    // printf("DIVIDE \n");
     // print_tokens(vars()->tokens);
 }
 

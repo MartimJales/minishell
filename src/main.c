@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 10:17:18 by mjales            #+#    #+#             */
-/*   Updated: 2023/08/28 00:53:45 by mjales           ###   ########.fr       */
+/*   Updated: 2023/08/29 16:44:39 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,8 +107,9 @@ int is_builtin_tree(struct cmd *cmd) {
             break;
         case PIPE:
             {
-                return 0;
                 struct pipecmd *pcmd = (struct pipecmd *)cmd;
+                if (pcmd->right)
+                    return 0;
                 return is_builtin_tree(pcmd->left);  // Check the left command of the pipe
             }
             break;
@@ -122,6 +123,7 @@ int is_builtin_tree(struct cmd *cmd) {
 void process_and_execute(struct cmd *tree) 
 {
     // Temos que ter cuidado com este fork
+    vars()->forked = 0;
     if (is_builtin_tree(tree))
         exec_tree(tree);
     else
@@ -162,10 +164,10 @@ void process_input() {
         elems()->s = vars()->s;
         lexer(vars()->envp);
         struct cmd *tree = parsepipe(vars()->tokens);
-        //debug_tree(tree);
+        // debug_tree(tree);
         process_and_execute(tree);
         cleanup();
-        // exit(exit_status); // This is for the tester, needs to be reviewed
+        // exit (exit_status); // This is for the tester, needs to be reviewed
     }
 }
 
