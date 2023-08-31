@@ -3,14 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   aux.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dcordovi <dcordovi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 12:28:03 by mjales            #+#    #+#             */
-/*   Updated: 2023/08/30 10:23:21 by mjales           ###   ########.fr       */
+/*   Updated: 2023/08/31 13:21:58 by dcordovi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
+
+extern int exit_status;
 
 void	create_sc(void)
 {
@@ -93,13 +95,17 @@ char	*ft_strnstr(const char *big, const char *little, size_t len)
 	return (NULL);
 }
 
-size_t	is_delimiter(const char *s, char **sc, size_t *len)
+size_t is_delimiter(const char *s, char **sc, size_t *len)
 {
-	for (size_t i = 0; i < 14; i++)
+	size_t	i;
+
+	i = 0;
+	while (i < 14)
 	{
 		*len = strlen(sc[i]);
 		if (strncmp(s, sc[i], *len) == 0)
 			return (1);
+		i++;
 	}
 	*len = 0;
 	return (0);
@@ -139,7 +145,7 @@ size_t	string_number_sc(char const *s, char **sc)
 		{
 			flag = 0;
 			i += len;
-			continue;
+			continue ;
 		}
 		if (!flag)
 			num++;
@@ -217,16 +223,16 @@ char	*junta_strings(char *s1, char *s2)
 int is_builtin(char *cmd)
 {
 	if (strcmp("export", cmd) == 0)
-    	return 1;
-    if (strcmp("cd", cmd) == 0)
-    	return 1;
-    if (strcmp("unset", cmd) == 0)
-		return 1;
-    if (strcmp("env", cmd) == 0)
-		return 1;
+		return (1);
+	if (strcmp("cd", cmd) == 0)
+		return (1);
+	if (strcmp("unset", cmd) == 0)
+		return (1);
+	if (strcmp("env", cmd) == 0)
+		return (1);
 	if (strcmp("exit", cmd) == 0)
-		return 1;
-	return 0;
+		return (1);
+	return (0);
 }
 
 char	**check_path(t_list *args, char **path_arg)
@@ -238,7 +244,7 @@ char	**check_path(t_list *args, char **path_arg)
 	teste = list_to_array(args);
 	i = 0;
 	if (is_builtin(teste[i]))
-		return teste;
+		return (teste);
 	while (path_arg[i])
 	{
 		buffer = malloc(ft_strlen(path_arg[i]) + 1);
@@ -252,10 +258,9 @@ char	**check_path(t_list *args, char **path_arg)
 			free(buffer);
 			return (teste);
 		}
-		free(buffer);
 		i++;
+		free(buffer);
 	}
-    printf("check retornou NULL\n");
 	return (NULL);
 }
 
@@ -282,10 +287,8 @@ char	**create_path(char *envp[])
 
 void	signal_cmd(int sig)
 {
-	//g_exit_status += sig;
 	if (sig == 2)
 	{
-		//g_exit_status = 130;
 		printf("\n");
 		rl_on_new_line();
 		//rl_replace_line("", 0);
@@ -298,50 +301,57 @@ void	signal_cmd(int sig)
 	}
 }
 
-char *ft_itoa(int nbr) 
+char *ft_itoa(int nbr)
 {
-	if(nbr == -2147483648)
-		return("-2147483648\0");
-	int n = nbr;
-	int len = 0;
+	int		n;
+	int		len;
+	char	*result;
+
+	n = nbr;
+	if (nbr == -2147483648)
+		return ("-2147483648\0");
+	len = 0;
 	if (nbr <= 0)
 	{
 		len++;
-    	}
-	while (n) 
+	}
+	while (n)
 	{
 		n /= 10;
 		len++;
 	}
-	char *result = (char *)malloc(sizeof(char) * (len + 1));
-	if (result == NULL) 
-		return NULL;
+	result = (char *)malloc(sizeof(char) * (len + 1));
+	if (result == NULL)
+		return (NULL);
 	result[len] = '\0';
 	if (nbr == 0)
 	{
 		result[0] = '0';
-		return(result);
+		return (result);
 	}
-	if (nbr < 0) 
+	if (nbr < 0)
 	{
 		result[0] = '-';
 		nbr = -nbr;
 	}
-	while (nbr) 
+	while (nbr)
 	{
 		result[--len] = nbr % 10 + '0';
 		nbr /= 10;
 	}
-	return result;
+	return (result);
 }
 
 long long int	ft_atoi(char *str)
 {
-	int result = 0;
-	int sign = 1;
+	int	result;
+	int	sign;
+
+	result = 0;
+	sign = 1;
 
 	while (*str == ' ' || (*str >= 9 && *str <= 13))
-        	str++;
+		str++;
 	if (*str == '-')
 		sign = -1;
 	if (*str == '-' || *str == '+')

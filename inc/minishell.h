@@ -25,27 +25,27 @@
 # include <fcntl.h>
 
 
-#define DEF 0
-#define SQ 1
-#define DQ 2
+# define DEF 0
+# define SQ 1
+# define DQ 2
 
-#define EXEC  1
-#define REDIR 2
-#define PIPE  3
+# define EXEC  1
+# define REDIR 2
+# define PIPE  3
 
-#define OUT  1
-#define IN 2
-#define APPEND  3
-#define HEREDOC  4
+# define OUT  1
+# define IN 2
+# define APPEND  3
+# define HEREDOC  4
 
-#define MAXARGS 10
+# define MAXARGS 10
 
 //Structs
 typedef struct s_elems
 {
-	char *s;
-  pid_t ppid;
-	int state;
+	char	*s;
+	pid_t	ppid;
+	int		state;
 }	t_elems;
 
 typedef struct s_list
@@ -58,36 +58,36 @@ typedef struct s_list
 typedef struct s_vars
 {
 	char	*s;
-	t_list  *tokens;
+	t_list	*tokens;
 	char	**sc;
-  char	**path_arg;
-  char    **envp;
+	char	**path_arg;
+	char	**envp;
 	int		num_sc;
-  int     token_len;
-  int forked;
+	int		token_len;
+	int		forked;
 }	t_vars;
 
-struct cmd {
-  int type;
+struct	cmd {
+	int	type;
 };
 
 struct execcmd {
-  int type;
-  char **argv;
+	int		type;
+	char	**argv;
 };
 
-struct redircmd {
-  int type;
-  struct cmd *cmd;
-  char *file;
-  int mode;
-  int fd;
+struct	redircmd {
+	int			type;
+	struct cmd	*cmd;
+	char		*file;
+	int			mode;
+	int			fd;
 };
 
 struct pipecmd {
-  int type;
-  struct cmd *left;
-  struct cmd *right;
+	int			type;
+	struct cmd	*left;
+	struct cmd	*right;
 };
 
 //Lexer functions
