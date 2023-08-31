@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 12:28:03 by mjales            #+#    #+#             */
-/*   Updated: 2023/08/27 23:36:29 by mjales           ###   ########.fr       */
+/*   Updated: 2023/08/30 10:23:21 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,6 +224,8 @@ int is_builtin(char *cmd)
 		return 1;
     if (strcmp("env", cmd) == 0)
 		return 1;
+	if (strcmp("exit", cmd) == 0)
+		return 1;
 	return 0;
 }
 
@@ -331,4 +333,23 @@ char *ft_itoa(int nbr)
 		nbr /= 10;
 	}
 	return result;
+}
+
+long long int	ft_atoi(char *str)
+{
+	int result = 0;
+	int sign = 1;
+
+	while (*str == ' ' || (*str >= 9 && *str <= 13))
+        	str++;
+	if (*str == '-')
+		sign = -1;
+	if (*str == '-' || *str == '+')
+		str++;
+	while (*str >= '0' && *str <= '9')
+	{
+		result = result * 10 + *str - '0';
+		str++;
+	}
+	return (sign * result);
 }

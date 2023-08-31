@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/21 00:14:27 by mjales            #+#    #+#             */
-/*   Updated: 2023/08/27 23:00:41 by mjales           ###   ########.fr       */
+/*   Updated: 2023/08/31 00:32:56 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,11 @@ struct cmd *parseredir(t_list *lst)
             lst = lst->next;
         }
     }
+    // if(*old->next->content->s == ' ')
+    //     old->next = old->next->next;
+    
+    // printf("REDIR\n");
+    // print_tokens(old);
     return parseexec(old);
 }
 

@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 13:00:05 by mjales            #+#    #+#             */
-/*   Updated: 2023/08/29 16:44:14 by mjales           ###   ########.fr       */
+/*   Updated: 2023/08/30 22:09:39 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,18 @@ int is_special(const char *str, char **special) {
             return strlen(vars()->sc[i]);
         }
     }
+    return 0;
+}
+
+int is_redir(const char *str) {
+    if (strncmp(str, ">>", 2) == 0)
+        return 1;
+    if (strncmp(str, "<<", 2) == 0)
+        return 1;
+    if (strncmp(str, ">", 1) == 0)
+        return 1;
+    if (strncmp(str, "<", 1) == 0)
+        return 1;
     return 0;
 }
 
@@ -83,10 +95,59 @@ t_list *create_token(int start, int end, int state)
     // ft_lstadd_back(&vars()->tokens, aux);
 }
 
-char* replace_dollar(const char* input, char **envp) {
+
+t_list *create_space_token( int state)
+{                
+    t_list *aux;
+    aux = ft_lstnew(NULL);
+    aux->content = malloc(sizeof(t_elems));
+    aux->content->s = malloc(2);
+    aux->content->s = strdup(" ");
+    aux->content->state = state;
+    return aux;
+    // ft_lstadd_back(&vars()->tokens, aux);
+}
+
+// char* replace_dollar(const char* input, char **envp) {
+//     size_t length = strlen(input);
+//     char* result = malloc(length * sizeof(char) * 10); // Alocar espaço suficiente
+//     char* str_aux;
+//     size_t index_result = 0;
+
+//     for (size_t i = 0; i < length; i++) {
+//         if (input[i] == '$') {
+//             size_t start = i + 1;
+//             size_t j = start;
+//             while (ft_isalnum(input[j])) {
+//                 j++;
+//             }
+//             if (input[j] == '?')
+//                 j++;
+//             str_aux = malloc(j - start + 1);
+//             strncpy(str_aux, input + start, j - start);
+//             str_aux[j - start] = '\0';
+//             char* export = NULL;
+//             if (strcmp(str_aux, "?") == 0) 
+//                 export = ft_itoa(exit_status);
+//             else
+//                 export = exp_dollar(str_aux, envp);
+
+//             strcat(result + index_result, export);
+//             index_result += strlen(export);
+//             i = j - 1; // Atualizar o índice principal para refletir a mudança
+//         } else {
+//             result[index_result++] = input[i];
+//         }
+//     }
+//     result[index_result] = '\0';        
+//     return result;
+// }
+
+char *replace_dollar(const char *input, char **envp) {
     size_t length = strlen(input);
-    char* result = malloc(length * sizeof(char) * 10); // Alocar espaço suficiente
-    char* str_aux;
+    char *result = malloc(length * 10 + 1); // Allocate sufficient space
+    result[0] = '\0'; // Ensure the result string starts empty
+    char *str_aux;
     size_t index_result = 0;
 
     for (size_t i = 0; i < length; i++) {
@@ -96,20 +157,23 @@ char* replace_dollar(const char* input, char **envp) {
             while (ft_isalnum(input[j])) {
                 j++;
             }
-            if (input[j] == '?')
+            if (input[j] == '?') {
                 j++;
+            }
             str_aux = malloc(j - start + 1);
             strncpy(str_aux, input + start, j - start);
             str_aux[j - start] = '\0';
-            char* export = NULL;
-            if (strcmp(str_aux, "?") == 0) 
+            char *export = NULL;
+            if (strcmp(str_aux, "?") == 0) {
                 export = ft_itoa(exit_status);
-            else
+            } else {
                 export = exp_dollar(str_aux, envp);
+            }
 
             strcat(result + index_result, export);
             index_result += strlen(export);
-            i = j - 1; // Atualizar o índice principal para refletir a mudança
+            free(str_aux); // Free the temporary string memory
+            i = j - 1; // Update the main index to reflect the change
         } else {
             result[index_result++] = input[i];
         }
@@ -130,6 +194,8 @@ void find_dollar(char** envp)
         }
         aux = aux->next;
     }
+    // printf("AFTER FIND\n");
+    // print_tokens(vars()->tokens);    
 }
 
 void add_token(t_list **list, const char *token_str, int state) {
@@ -241,6 +307,8 @@ void subdivide_tokens(void)
     }
     // print_tokens(vars()->tokens);
 }
+
+
 
 // t_list *add_subtoken(t_list *tokens, char *part, int state, char *sc_element) {
 //     if (strstr(part, sc_element)) {
@@ -364,6 +432,12 @@ void process_space_state(int *old, int i, int *state, int *space) {
     }
 }
 
+void process_new_space(int *state, int *space) {
+    ft_lstadd_back(&vars()->tokens, create_space_token(*state));
+    *state = 0;
+    *space = 0;
+}
+
 void lexer(char **envp) {
     int i = -1;
     int old = 0;
@@ -379,6 +453,13 @@ void lexer(char **envp) {
             space = 0;
         } else if (elems()->s[i] == ' ' && state == 0) {
             process_space_state(&old, i, &state, &space);
+        } else if (is_redir(&vars()->s[i]) && state == 0) {
+            process_space_state(&old, i, &state, &space);
+            i++;
+            if (is_redir(&vars()->s[i]) && state == 0)
+                i++;
+            process_space_state(&old, i, &state, &space);
+            process_new_space(&state, &space);
         } else if (space) {
             ft_lstadd_back(&vars()->tokens, create_token(old, i, state));
             old = i;

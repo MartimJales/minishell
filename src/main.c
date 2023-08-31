@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 10:17:18 by mjales            #+#    #+#             */
-/*   Updated: 2023/08/29 16:44:39 by mjales           ###   ########.fr       */
+/*   Updated: 2023/08/31 00:46:45 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void debug_tree(struct cmd *tree)
                 // Uncomment the line below if you add the fd field later
                 // printf("  fd: %d\n", r->fd);
                 printf("  -> Nested cmd:\n");
-                //debug_tree(r->cmd);
+                debug_tree(r->cmd);
             }
             break;
         case PIPE:
@@ -129,12 +129,24 @@ void process_and_execute(struct cmd *tree)
     else
     {
         vars()->forked = 1;
-        int pid = fork();
-        if (pid == -1)
+        int cpid = fork();
+        if (cpid == -1)
             perror("fork");
-        if (pid == 0)
+        if (cpid == 0)
+        {
             exec_tree(tree);
-        wait(0);
+        }
+        // printf("before execve = %d\n", exit_status);
+        int status;
+        waitpid(cpid, &status, 0);
+        if (WIFEXITED(status)) {
+            exit_status = WEXITSTATUS(status);
+            // printf("Child process exited with status: %d\n", exit_status);
+        } else {
+            printf("Child process did not exit normally\n");
+        }
+        exit_status = exit_status % 256;
+        // printf("exit_main = %d\n", exit_status);
     }
 }
 
@@ -151,10 +163,12 @@ void process_input() {
         setup_signals();
         if (vars()->s == NULL)
             break;
-        if (strcmp(vars()->s, "exit") == 0) {
-            cleanup();
-            break;
-        }
+        // if (strncmp(vars()->s, "exit", ft_strlen("exit")) == 0) {
+        //     printf("vamos sair desta merda\n");
+        //     exit_program(vars()->s);
+        //     cleanup();
+        //     break;
+        // }
         if (all_space(vars()->s)) {
             cleanup();
             continue;
@@ -171,6 +185,32 @@ void process_input() {
     }
 }
 
+char **duplicate_envp(char **envp) {
+    int envp_size = 0;
+    while (envp[envp_size] != NULL) {
+        envp_size++;
+    }
+
+    char **new_envp = (char **)malloc((envp_size + 1) * sizeof(char *));
+    if (!new_envp) {
+        perror("malloc");
+        exit(1);
+    }
+
+    int i = 0;
+    while (envp[i] != NULL) {
+        new_envp[i] = strdup(envp[i]);
+        if (!new_envp[i]) {
+            perror("strdup");
+            exit(1);
+        }
+        i++;
+    }
+    new_envp[envp_size] = NULL;
+
+    return new_envp;
+}
+
 int main(int argc, char **argv, char **envp) {
     (void)argc;
     (void)argv;
@@ -178,7 +218,7 @@ int main(int argc, char **argv, char **envp) {
     exit_status = 0;
 
     vars()->path_arg = create_path(envp);
-    vars()->envp = envp;
+    vars()->envp = duplicate_envp(envp);
 
     process_input();
 

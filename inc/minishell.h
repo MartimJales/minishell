@@ -117,13 +117,14 @@ void print_tokens(t_list * current);
 char *ft_itoa(int nbr);
 int is_builtin(char *cmd);
 void process_and_execute(struct cmd *tree);
+long long int	ft_atoi(char *str);
 
 //MIT functions
 char **list_to_array(t_list *lst);
 
 //EXEC functions
 void    exec_tree(struct cmd *root);
-int exec_env(void);
+int exec_env(int declare);
 
 //Linked Lists functions
 void	ft_lstadd_back(t_list **lst, t_list *new);
