@@ -202,17 +202,19 @@ void	find_dollar(char	**envp)
 	aux = vars()->tokens;
 	while (aux != NULL)
 	{
-		if (aux->content->state != SQ) {
+		if (aux->content->state != SQ)
 			aux->content->s = replace_dollar(aux->content->s, envp);
-		}
 		aux = aux->next;
 	}
 }
 
 void add_token(t_list **list, const char *token_str, int state)
 {
-	t_list	*new_node = (t_list *)malloc(sizeof(t_list));
-	t_elems	*content = (t_elems *)malloc(sizeof(t_elems));
+	t_list	*new_node;
+	t_elems	*content;
+
+	new_node = (t_list *)malloc(sizeof(t_list));
+	content = (t_elems *)malloc(sizeof(t_elems));
 	content->s = strdup(token_str);
 	content->state = state;
 	new_node->content = content;
@@ -372,120 +374,154 @@ void subdivide_tokens(void)
 
 void free_tokens(void)
 {
-    t_list *current = vars()->tokens;
-    while (current != NULL) {
-        t_list *next = current->next;
-        free(current->content->s); // Libera a string do token
-        free(current->content);    // Libera a estrutura do conteúdo
-        free(current);            // Libera o nó da lista
-        current = next;
-    }
-    vars()->tokens = NULL; // Certifique-se de definir a lista de tokens como NULL depois de liberar
+	t_list	*current;
+	t_list	*next;
+
+	current = vars()->tokens;
+	while (current != NULL)
+	{
+		next = current->next;
+		free(current->content->s);
+		free(current->content);
+		free(current);
+		current = next;
+	}
+	vars()->tokens = NULL;
 }
 
 void junta_tokens(t_list *lst)
 {
-    t_list *cur = lst;
-    t_list *prev = malloc(sizeof(t_list *));
-    
-    prev->next = lst;
-    while (cur && cur->next)
-    {
-        // If current token is not space and next token is also not a space
-        if (strcmp(cur->content->s, " ") != 0 && strcmp(cur->next->content->s, " ") != 0)
-        {
-            char *concatenated_str = junta_strings(cur->content->s, cur->next->content->s);
+	t_list	*cur;
+	t_list	*prev;
+	t_list	*tmp;
+	char	*concatenated_str;
 
-            cur->content->s = concatenated_str;
-            if (cur->next->content->state > cur->content->state)
-                cur->content->state = cur->next->content->state;
+	cur = lst;
+	prev = malloc(sizeof(t_list *));
+	prev->next = lst;
+	while (cur && cur->next)
+	{
+		if (strcmp(cur->content->s, " ") != 0 && \
+strcmp(cur->next->content->s, " ") != 0)
+		{
+			concatenated_str = \
+junta_strings(cur->content->s, cur->next->content->s);
 
-            t_list *tmp = cur->next;
-            cur->next = tmp->next;
-        }
-        else
-        {
-            prev = cur;
-            cur = cur->next;
-        }
-    }
+			cur->content->s = concatenated_str;
+			if (cur->next->content->state > cur->content->state)
+				cur->content->state = cur->next->content->state;
+
+			tmp = cur->next;
+			cur->next = tmp->next;
+		}
+		else
+		{
+			prev = cur;
+			cur = cur->next;
+		}
+	}
 }
 
-void process_quote_state(int *old, int i, int *state) {
-    if (*state == 0) {
-        ft_lstadd_back(&vars()->tokens, create_token(*old, i, *state));
-        *old = i + 1;
-        *state = 1;
-    } else if (*state == 1) {
-        ft_lstadd_back(&vars()->tokens, create_token(*old, i, *state));
-        *old = i + 1;
-        *state = 0;
-    }
+void process_quote_state(int *old, int i, int *state)
+{
+	if (*state == 0)
+	{
+		ft_lstadd_back(&vars()->tokens, create_token(*old, i, *state));
+		*old = i + 1;
+		*state = 1;
+	}
+	else if (*state == 1)
+	{
+		ft_lstadd_back(&vars()->tokens, create_token(*old, i, *state));
+		*old = i + 1;
+		*state = 0;
+	}
 }
 
-void process_double_quote_state(int *old, int i, int *state) {
-    if (*state == 0) {
-        ft_lstadd_back(&vars()->tokens, create_token(*old, i, *state));
-        *old = i + 1;
-        *state = 2;
-    } else if (*state == 2) {
-        ft_lstadd_back(&vars()->tokens, create_token(*old, i, *state));
-        *old = i + 1;
-        *state = 0;
-    }
+void process_double_quote_state(int *old, int i, int *state)
+{
+	if (*state == 0)
+	{
+		ft_lstadd_back(&vars()->tokens, create_token(*old, i, *state));
+		*old = i + 1;
+		*state = 2;
+	}
+	else if (*state == 2)
+	{
+		ft_lstadd_back(&vars()->tokens, create_token(*old, i, *state));
+		*old = i + 1;
+		*state = 0;
+	}
 }
 
-void process_space_state(int *old, int i, int *state, int *space) {
-    if (*state == 0) {
-        ft_lstadd_back(&vars()->tokens, create_token(*old, i, *state));
-        *old = i;
-        *state = 0;
-        *space = 1;
-    }
+void process_space_state(int *old, int i, int *state, int *space)
+{
+	if (*state == 0)
+	{
+		ft_lstadd_back(&vars()->tokens, create_token(*old, i, *state));
+		*old = i;
+		*state = 0;
+		*space = 1;
+	}
 }
 
-void process_new_space(int *state, int *space) {
-    ft_lstadd_back(&vars()->tokens, create_space_token(*state));
-    *state = 0;
-    *space = 0;
+void process_new_space(int *state, int *space)
+{
+	ft_lstadd_back(&vars()->tokens, create_space_token(*state));
+	*state = 0;
+	*space = 0;
 }
 
-void lexer(char **envp) {
-    int i = -1;
-    int old = 0;
-    int state = 0;
-    int space = 0;
+void lexer(char **envp)
+{
+	int	i;
+	int	old;
+	int	state;
+	int	space;
 
-    while (elems()->s[++i]) {
-        if (elems()->s[i] == '\'') {
-            process_quote_state(&old, i, &state);
-            space = 0;
-        } else if (elems()->s[i] == '\"') {
-            process_double_quote_state(&old, i, &state);
-            space = 0;
-        } else if (elems()->s[i] == ' ' && state == 0) {
-            process_space_state(&old, i, &state, &space);
-        } else if (is_redir(&vars()->s[i]) && state == 0) {
-            process_space_state(&old, i, &state, &space);
-            i++;
-            if (is_redir(&vars()->s[i]) && state == 0)
-                i++;
-            process_space_state(&old, i, &state, &space);
-            process_new_space(&state, &space);
-        } else if (space) {
-            ft_lstadd_back(&vars()->tokens, create_token(old, i, state));
-            old = i;
-            state = 0;
-            space = 0;
-        }
-    }
-    ft_lstadd_back(&vars()->tokens, create_token(old, i, state));
-    find_dollar(envp);
+	i = -1;
+	old = 0;
+	state = 0;
+	space = 0;
+
+	while (elems()->s[++i])
+	{
+		if (elems()->s[i] == '\'')
+		{
+			process_quote_state(&old, i, &state);
+			space = 0;
+		}
+		else if (elems()->s[i] == '\"')
+		{
+			process_double_quote_state(&old, i, &state);
+			space = 0;
+		}
+		else if (elems()->s[i] == ' ' && state == 0)
+			process_space_state(&old, i, &state, &space);
+		else if (is_redir(&vars()->s[i]) && state == 0) 
+		{
+			process_space_state(&old, i, &state, &space);
+			i++;
+			if (is_redir(&vars()->s[i]) && state == 0)
+				i++;
+			process_space_state(&old, i, &state, &space);
+			process_new_space(&state, &space);
+		}
+		else if (space)
+		{
+			ft_lstadd_back(&vars()->tokens, create_token(old, i, state));
+			old = i;
+			state = 0;
+			space = 0;
+		}
+	}
+	ft_lstadd_back(&vars()->tokens, create_token(old, i, state));
+	find_dollar(envp);
     // print_tokens(vars()->tokens);
-    junta_tokens(vars()->tokens);
+	junta_tokens(vars()->tokens);
     // printf("JUNTA\n");
     // print_tokens(vars()->tokens);
-    subdivide_tokens();
+	subdivide_tokens();
     // printf("DIVIDE \n");
     // print_tokens(vars()->tokens);
 }

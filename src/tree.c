@@ -12,116 +12,114 @@
 
 #include "../inc/minishell.h"
 
-struct cmd *parsepipe(t_list *lst)
+struct cmd	*parsepipe(t_list *lst)
 {
-    t_list *begin;
+	t_list			*begin;
+	struct pipecmd	*pipe;
+	t_list			*current;
 
-    begin = lst;
-    if (!lst)
-        return NULL;
-    while (lst->next && *(lst->next->content->s) != '|'){
-        lst = lst->next;
-    }
-    struct pipecmd *pipe;
-    pipe = malloc(sizeof(*pipe));
-    pipe->type = PIPE;
-    t_list *current = begin;    
-    if (lst->next){
-        pipe->right = parsepipe(lst->next->next);
-    }
-    else  {
-        pipe->left = parseredir(current);
-        pipe->right = NULL;
-        return (struct cmd*)pipe;
-    }  
-    lst->next = NULL;
-    pipe->left = parseredir(current);
-    return (struct cmd*)pipe;
+	begin = lst;
+	if (!lst)
+		return (NULL);
+	while (lst->next && *(lst->next->content->s) != '|')
+		lst = lst->next;
+	pipe = malloc(sizeof(*pipe));
+	pipe->type = PIPE;
+	current = begin; 
+	if (lst->next)
+		pipe->right = parsepipe(lst->next->next);
+	else
+	{
+		pipe->left = parseredir(current);
+		pipe->right = NULL;
+		return ((struct cmd *)pipe);
+	}
+	lst->next = NULL;
+	pipe->left = parseredir(current);
+	return ((struct cmd *)pipe);
 }
 
-int ft_redir_signal(char *s)
+int	ft_redir_signal(char *s)
 {
-    if (strncmp(">>", s, 2) == 0)
-        return APPEND;
-    if (strncmp("<<", s, 2) == 0)
-        return HEREDOC;
-    if (*s == '>')
-        return OUT;
-    if (*s == '<')
-        return IN;
-    return 0; 
+	if (strncmp(">>", s, 2) == 0)
+		return (APPEND);
+	if (strncmp("<<", s, 2) == 0)
+		return (HEREDOC);
+	if (*s == '>')
+		return (OUT);
+	if (*s == '<')
+		return (IN);
+	return (0); 
 }
 
-int redir_mode(int redir_signal)
+int	redir_mode(int redir_signal)
 {
-    if (redir_signal == IN)
-        return (O_RDONLY);
-    if (redir_signal == OUT)
-        return (O_WRONLY|O_CREAT|O_TRUNC);
-    if (redir_signal == APPEND)
-        return (O_WRONLY|O_CREAT);
-    if (redir_signal == HEREDOC) // Temos que adicionar isto amis tarde
-        return (HEREDOC);
-    return (0);
+	if (redir_signal == IN)
+		return (O_RDONLY);
+	if (redir_signal == OUT)
+		return (O_WRONLY | O_CREAT | O_TRUNC);
+	if (redir_signal == APPEND)
+		return (O_WRONLY | O_CREAT);
+	if (redir_signal == HEREDOC)
+		return (HEREDOC);
+	return (0);
 }
 
-struct cmd *create_redircmd(t_list *lst, char *filename, int redir_signal)
+struct cmd	*create_redircmd(t_list *lst, char *filename, int redir_signal)
 {
-    struct redircmd *cmd;
+	struct redircmd	*cmd;
 
-    cmd = malloc(sizeof(*cmd));
-    memset(cmd, 0, sizeof(*cmd));
-    cmd->type = REDIR;
-    cmd->file = filename;
-    cmd->mode = redir_mode(redir_signal);
-    if (redir_signal == IN || redir_signal == HEREDOC)
-        cmd->fd = 0;
-    else if (redir_signal == OUT || redir_signal == APPEND)
-        cmd->fd = 1;
-    else 
-        cmd->fd = 2;
-    cmd->cmd = parseredir(lst);
-    return (struct cmd*)cmd;
+	cmd = malloc(sizeof(*cmd));
+	memset(cmd, 0, sizeof(*cmd));
+	cmd->type = REDIR;
+	cmd->file = filename;
+	cmd->mode = redir_mode(redir_signal);
+	if (redir_signal == IN || redir_signal == HEREDOC)
+		cmd->fd = 0;
+	else if (redir_signal == OUT || redir_signal == APPEND)
+		cmd->fd = 1;
+	else 
+		cmd->fd = 2;
+	cmd->cmd = parseredir(lst);
+	return ((struct cmd *)cmd);
 }
 
-struct cmd *parseredir(t_list *lst)
+struct cmd	*parseredir(t_list *lst)
 {
-    t_list *old = lst;
-    t_list *prev = malloc(sizeof(t_list));
-    int redir_signal;
+	t_list	*old;
+	t_list	*prev;
+	int		redir_signal;
 
-    prev->next = lst;
-    if (!lst)
-        return NULL;
-    while (lst)
-    {
-        if (lst->content->state == DEF)
-            redir_signal = ft_redir_signal(lst->content->s);
-        if (redir_signal != 0)
-        {
-            prev->next = prev->next->next->next;
-            return create_redircmd(old, lst->next->content->s, redir_signal);            
-        }
-        else {
-            prev = prev->next;
-            lst = lst->next;
-        }
-    }
-    // if(*old->next->content->s == ' ')
-    //     old->next = old->next->next;
-    
-    // printf("REDIR\n");
-    // print_tokens(old);
-    return parseexec(old);
+	old = lst;
+	prev = malloc(sizeof(t_list));
+	prev->next = lst;
+	if (!lst)
+		return (NULL);
+	while (lst)
+	{
+		if (lst->content->state == DEF)
+			redir_signal = ft_redir_signal(lst->content->s);
+		if (redir_signal != 0)
+		{
+			prev->next = prev->next->next->next;
+			return (create_redircmd(old, lst->next->content->s, redir_signal));
+		}
+		else 
+		{
+			prev = prev->next;
+			lst = lst->next;
+		}
+	}
+	return (parseexec(old));
 }
 
 struct cmd *parseexec(t_list *lst)
 {
-   struct execcmd *cmd;
+	struct execcmd	*cmd;
 
-    cmd = malloc(sizeof(*cmd));
-    memset(cmd, 0, sizeof(*cmd));
-    cmd->type = EXEC;
-    cmd->argv = check_path(lst, vars()->path_arg);
-    return (struct cmd*)cmd;
+	cmd = malloc(sizeof(*cmd));
+	memset(cmd, 0, sizeof(*cmd));
+	cmd->type = EXEC;
+	cmd->argv = check_path(lst, vars()->path_arg);
+	return ((struct cmd *)cmd);
 }
