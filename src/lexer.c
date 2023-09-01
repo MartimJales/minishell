@@ -12,39 +12,51 @@
 
 #include "../inc/minishell.h"
 
-extern int exit_status;
+extern int	exit_status;
 
-void print_tokens(t_list * lst)
+void	print_tokens(t_list *lst)
 {
-    t_list *current = lst;
- 
-    printf("Tokens:\n");
-    while (current != NULL) {
-        printf("token(%d) = {%s}\n", current->content->state, current->content->s);
-        current = current->next;
-    }
+	t_list	*current;
+
+	current = lst;
+
+	printf("Tokens:\n");
+	while (current != NULL)
+	{
+		printf("token(%d) = {%s}\n", current->content->state, \
+current->content->s);
+		current = current->next;
+	}
 }
 
-int is_special(const char *str, char **special) {
-    for (int i = 0; i < vars()->num_sc; i++) {
-        if (strncmp(str, vars()->sc[i], strlen(vars()->sc[i])) == 0) {
-            *special = vars()->sc[i];
-            return strlen(vars()->sc[i]);
-        }
-    }
-    return 0;
+int	is_special(const char *str, char **special)
+{
+	int	i;
+
+	i = 0;
+	while (i < vars()->num_sc)
+	{
+		if (strncmp(str, vars()->sc[i], strlen(vars()->sc[i])) == 0)
+		{
+			*special = vars()->sc[i];
+			return (strlen(vars()->sc[i]));
+		}
+		i++;
+	}
+	return (0);
 }
 
-int is_redir(const char *str) {
-    if (strncmp(str, ">>", 2) == 0)
-        return 1;
-    if (strncmp(str, "<<", 2) == 0)
-        return 1;
-    if (strncmp(str, ">", 1) == 0)
-        return 1;
-    if (strncmp(str, "<", 1) == 0)
-        return 1;
-    return 0;
+int	is_redir(const char *str)
+{
+	if (strncmp(str, ">>", 2) == 0)
+		return (1);
+	if (strncmp(str, "<<", 2) == 0)
+		return (1);
+	if (strncmp(str, ">", 1) == 0)
+		return (1);
+	if (strncmp(str, "<", 1) == 0)
+		return (1);
+	return (0);
 }
 
 size_t	ft_strlen(const char *str)
@@ -57,16 +69,16 @@ size_t	ft_strlen(const char *str)
 	return (i);
 }
 
-char *exp_dollar(char *s, char **envp)
+char	*exp_dollar(char *s, char **envp)
 {
-    char	*path;
-    int     i;
+	char	*path;
+	int		i;
 
-    i = 0;
+	i = 0;
     // printf("s = {%s}\n", s);
-    if (s == NULL)
-        return ("");
-    s = junta_strings(s, "=");
+	if (s == NULL)
+		return ("");
+	s = junta_strings(s, "=");
 	while (envp[i])
 	{
 		path = ft_strnstr(envp[i], s, ft_strlen(s));
@@ -74,37 +86,38 @@ char *exp_dollar(char *s, char **envp)
 			break ;
 		i++;
 	}
-    if (!path)
-        return "$";
-    return (path + ft_strlen(s));
+	if (!path)
+		return ("$");
+	return (path + ft_strlen(s));
 }
 
 
 t_list *create_token(int start, int end, int state)
-{            
-    int size; 
-    size = end - start + 1;
-    
-    t_list *aux;
-    aux = ft_lstnew(NULL);
-    aux->content = malloc(sizeof(t_elems));
-    aux->content->s = malloc(size);
+{
+	int		size;
+	t_list *aux;
+
+	size = end - start + 1;
+	aux = ft_lstnew(NULL);
+	aux->content = malloc(sizeof(t_elems));
+	aux->content->s = malloc(size);
 	ft_strlcpy(aux->content->s, elems()->s + start, size);
-    aux->content->state = state;
-    return aux;
+	aux->content->state = state;
+	return (aux);
     // ft_lstadd_back(&vars()->tokens, aux);
 }
 
 
 t_list *create_space_token( int state)
-{                
-    t_list *aux;
-    aux = ft_lstnew(NULL);
-    aux->content = malloc(sizeof(t_elems));
-    aux->content->s = malloc(2);
-    aux->content->s = strdup(" ");
-    aux->content->state = state;
-    return aux;
+{
+	t_list	*aux;
+
+	aux = ft_lstnew(NULL);
+	aux->content = malloc(sizeof(t_elems));
+	aux->content->s = malloc(2);
+	aux->content->s = strdup(" ");
+	aux->content->state = state;
+	return (aux);
     // ft_lstadd_back(&vars()->tokens, aux);
 }
 
@@ -182,25 +195,24 @@ char *replace_dollar(const char *input, char **envp) {
     return result;
 }
 
-void find_dollar(char** envp)
+void	find_dollar(char	**envp)
 {
-    t_list *aux = vars()->tokens;
-    aux = vars()->tokens;
-    // print_tokens(vars()->tokens);
-    while(aux != NULL)
-    {
-        if (aux->content->state != SQ) {
-            aux->content->s = replace_dollar(aux->content->s, envp);
-        }
-        aux = aux->next;
-    }
-    // printf("AFTER FIND\n");
-    // print_tokens(vars()->tokens);    
+	t_list	*aux;
+
+	aux = vars()->tokens;
+	while (aux != NULL)
+	{
+		if (aux->content->state != SQ) {
+			aux->content->s = replace_dollar(aux->content->s, envp);
+		}
+		aux = aux->next;
+	}
 }
 
-void add_token(t_list **list, const char *token_str, int state) {
-	t_list *new_node = (t_list *)malloc(sizeof(t_list));
-	t_elems *content = (t_elems *)malloc(sizeof(t_elems));
+void add_token(t_list **list, const char *token_str, int state)
+{
+	t_list	*new_node = (t_list *)malloc(sizeof(t_list));
+	t_elems	*content = (t_elems *)malloc(sizeof(t_elems));
 	content->s = strdup(token_str);
 	content->state = state;
 	new_node->content = content;

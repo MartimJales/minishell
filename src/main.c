@@ -181,7 +181,7 @@ void process_input() {
         // debug_tree(tree);
         process_and_execute(tree);
         cleanup();
-        // exit (exit_status); // This is for the tester, needs to be reviewed
+        exit (exit_status);
     }
 }
 

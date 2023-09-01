@@ -88,7 +88,7 @@ int	check_alnum(const char *input_string)
 		return (0);
 	while (*input_string)
 	{
-		if (!isalnum(*input_string))
+		if (!ft_isalnum(*input_string))
 		{
 			return (0);
 		}
@@ -290,7 +290,7 @@ unsigned char modulo256(const char *numberStr)
 {
 	int	result;
 	int	start;
-	int i;
+	int	i;
 
 	result = 0;
 	start = 0;
@@ -314,7 +314,7 @@ unsigned char modulo256(const char *numberStr)
 
 int exec_exit(struct execcmd *ecmd)
 {
-    if (ecmd->argv[2]) {
+	if (ecmd->argv[2]) {
         fprintf(stderr, "exit: too many arguments\n");
         exit(127);
     }
@@ -386,7 +386,8 @@ void exec_pipe_command(struct pipecmd *pcmd) {
         dup2(pipefd[1], STDOUT_FILENO);
         close(pipefd[1]);
         exec_tree(pcmd->left);
-    } else {
+    } else 
+    {
         int status;
         waitpid(cpid, &status, 0);
         if (WIFEXITED(status)) {

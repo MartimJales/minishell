@@ -300,7 +300,7 @@ unsigned char modulo256(const char *numberStr)
 {
 	int	result;
 	int	start;
-	int i;
+	int	i;
 
 	result = 0;
 	start = 0;
@@ -322,20 +322,22 @@ unsigned char modulo256(const char *numberStr)
 
 int exec_exit(struct execcmd *ecmd)
 {
-    if (ecmd->argv[2]) {
-        fprintf(stderr, "exit: too many arguments\n");
-        exit(127);
-    }
-    if (ecmd->argv[1] == NULL)
-        exit(0);
-    if (!check_num(ecmd->argv[1])){
-        fprintf(stderr, "exit: numeric argument required\n");
-        exit(2);
-    }
-    // printf("%lld\n", ft_atoi(ecmd->argv[1]));
-    exit_status = ft_atoi(ecmd->argv[1]) % 256;
+	if (ecmd->argv[2]) 
+	{
+		fprintf(stderr, "exit: too many arguments\n");
+		exit(127);
+	}
+	if (ecmd->argv[1] == NULL)
+		exit(0);
+	if (!check_num(ecmd->argv[1]))
+	{
+		fprintf(stderr, "exit: numeric argument required\n");
+		exit(2);
+	}
+	// printf("%lld\n", ft_atoi(ecmd->argv[1]));
+	exit_status = ft_atoi(ecmd->argv[1]) % 256;
     // exit_status = modulo256(ecmd->argv[1]);
-    exit(exit_status);
+	exit(exit_status);
 }
 
 int	exec_dollar(struct execcmd *ecmd)
@@ -368,26 +370,29 @@ int exec_builtin(struct execcmd *ecmd)
 	return (-1);
 }
 
-void exec_single_command(struct execcmd *ecmd) {
-    if (!ecmd->argv[0])
-        exit(1);  // Case when no command is received
-    if (exec_builtin(ecmd) == -1) {
+void exec_single_command(struct execcmd *ecmd) 
+{
+	if (!ecmd->argv[0])
+		exit(1);
+	if (exec_builtin(ecmd) == -1) 
+	{
         // for (int i = 0; ecmd->argv[i]; i++)
         //     printf("argv[%d] = {%s}\n", i, ecmd->argv[i]);
-        execve(ecmd->argv[0], ecmd->argv, vars()->envp);
-        fprintf(stderr, "exec %s failed\n", ecmd->argv[0]);
-        exit(EXIT_FAILURE);
-    }
+		execve(ecmd->argv[0], ecmd->argv, vars()->envp);
+		fprintf(stderr, "exec %s failed\n", ecmd->argv[0]);
+		exit(EXIT_FAILURE);
+	}
 }
 
 void exec_redir(struct redircmd *rcmd) {
-    close(rcmd->fd);
-    if (open(rcmd->file, rcmd->mode, 0664) < 0) {
+	close(rcmd->fd);
+	if (open(rcmd->file, rcmd->mode, 0664) < 0)
+	{
         // perror("open");
         // fprintf(stderr, "open %s failed\n", rcmd->file);
-        exit_status = EXIT_FAILURE;
-    }
-    exec_tree(rcmd->cmd);
+		exit_status = EXIT_FAILURE;
+	}
+	exec_tree(rcmd->cmd);
 }
 
 // Auxiliary function for executing a pipe command
@@ -426,10 +431,13 @@ void exec_pipe_command(struct pipecmd *pcmd) {
     }
 }
 
-void exec_tree(struct cmd *root) {
-    if (!root) return;
+void exec_tree(struct cmd *root)
+{
+	if (!root) 
+		return ;
 
-    switch (root->type) {
+	switch (root->type)
+	{
         case EXEC:
             exec_single_command((struct execcmd *)root);
             break;
@@ -449,5 +457,5 @@ void exec_tree(struct cmd *root) {
         default:
             fprintf(stderr, "Unknown cmd type: %d\n", root->type);
             break;
-    }
+	}
 }
