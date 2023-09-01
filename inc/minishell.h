@@ -138,5 +138,6 @@ struct cmd *parseexec(t_list *lst);
 void debug_tree(struct cmd *root);
 
 
+int	is_builtin_tree(struct cmd *cmd);
 
 #endif

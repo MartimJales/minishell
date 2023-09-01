@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   aux.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dcordovi <dcordovi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 12:28:03 by mjales            #+#    #+#             */
-/*   Updated: 2023/08/31 13:21:58 by dcordovi         ###   ########.fr       */
+/*   Updated: 2023/09/01 12:35:30 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -243,7 +243,8 @@ char	**check_path(t_list *args, char **path_arg)
 
 	teste = list_to_array(args);
 	i = 0;
-	if (is_builtin(teste[i]))
+	// Tenho que alterar isto para ./ e outras exceções
+	if (is_builtin(teste[i]) || teste[i][0] == '/')
 		return (teste);
 	while (path_arg[i])
 	{
@@ -261,7 +262,7 @@ char	**check_path(t_list *args, char **path_arg)
 		i++;
 		free(buffer);
 	}
-	return (NULL);
+	return (teste);
 }
 
 char	**create_path(char *envp[])
@@ -291,7 +292,7 @@ void	signal_cmd(int sig)
 	{
 		printf("\n");
 		rl_on_new_line();
-		//rl_replace_line("", 0);
+		rl_replace_line("", 0);
 		rl_redisplay();
 	}
 	if (sig == SIGQUIT)
@@ -312,9 +313,7 @@ char *ft_itoa(int nbr)
 		return ("-2147483648\0");
 	len = 0;
 	if (nbr <= 0)
-	{
 		len++;
-	}
 	while (n)
 	{
 		n /= 10;
