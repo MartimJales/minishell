@@ -65,6 +65,7 @@ typedef struct s_vars
 	int		num_sc;
 	int		token_len;
 	int		forked;
+	int		pipefd[2];
 }	t_vars;
 
 struct	cmd {
