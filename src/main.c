@@ -14,106 +14,10 @@
 
 int exit_status;
 
-t_vars	*vars(void)
-{
-	static t_vars	var;
-
-	return (&var);
-}
-
-t_elems	*elems(void)
-{
-	static t_elems	elem;
-
-	return (&elem);
-}
-
-void	debug_tree(struct cmd *tree)
-{
-	if (!tree) return ;
-
-	switch (tree->type) {
-		case EXEC:
-			{
-				struct execcmd *e = (struct execcmd *)tree;
-				printf("EXEC cmd:\n");
-				for (int i = 0; e->argv && e->argv[i]; i++) {
-					printf("  argv[%d] = %s\n", i, e->argv[i]);
-				}
-			}
-			break;
-		case REDIR:
-			{
-				struct redircmd *r = (struct redircmd *)tree;
-				printf("REDIR cmd:\n");
-				printf("  file: %s\n", r->file);
-				printf("  mode: %d\n", r->mode);
-				// Uncomment the line below if you add the fd field later
-				// printf("  fd: %d\n", r->fd);
-				printf("  -> Nested cmd:\n");
-				debug_tree(r->cmd);
-			}
-			break;
-		case PIPE:
-			{
-				struct pipecmd *p = (struct pipecmd *)tree;
-				printf("PIPE cmd:\n");
-				printf("  -> Left cmd:\n");
-				debug_tree(p->left);
-				printf("  -> Right cmd:\n");
-				debug_tree(p->right);
-			}
-			break;
-		default:
-			printf("Unknown cmd type: %d\n", tree->type);
-			break;
-	}
-}
-
-void	setup_signals(void)
-{
-	signal(SIGINT, signal_cmd);
-	signal(SIGQUIT, SIG_IGN);
-}
-
-void	cleanup(void)
-{
-	free(vars()->s);
-	free_tokens();
-}
-
-int	builtin_exec(struct cmd *cmd)
-{
-	struct execcmd	*ecmd;
-	char			*command;
-
-	ecmd = (struct execcmd *)cmd;
-	command = ecmd->argv[0];
-	if (command) 
-	{
-		if (is_builtin(command))
-			return (1);
-		else
-			return (0);
-	}
-	return (-1);
-}
-
-int	builtin_pipe(struct cmd *cmd)
-{
-	struct pipecmd	*pcmd;
-
-	pcmd = (struct pipecmd *)cmd;
-	if (pcmd->right)
-		return (0);
-	return (is_builtin_tree(pcmd->left));
-}
-
 int	is_builtin_tree(struct cmd *cmd)
 {
 	if (!cmd)
 		return (0);
-
 	if (cmd->type == EXEC)
 		return (builtin_exec(cmd));
 	else if (cmd->type == REDIR)
@@ -189,41 +93,40 @@ void process_input() {
 }
 
 char **duplicate_envp(char **envp) {
-	int envp_size = 0;
+	int	envp_size = 0;
 	while (envp[envp_size] != NULL) {
 		envp_size++;
 	}
 
 	char **new_envp = (char **)malloc((envp_size + 1) * sizeof(char *));
-	if (!new_envp) {
+	if (!new_envp)
+	{
 		perror("malloc");
 		exit(1);
 	}
-
 	int i = 0;
-	while (envp[i] != NULL) {
+	while (envp[i] != NULL)
+	{
 		new_envp[i] = strdup(envp[i]);
-		if (!new_envp[i]) {
+		if (!new_envp[i]) 
+		{
 			perror("strdup");
 			exit(1);
 		}
 		i++;
 	}
 	new_envp[envp_size] = NULL;
-
-	return new_envp;
+	return (new_envp);
 }
 
-int main(int argc, char **argv, char **envp) {
+int	main(int argc, char **argv, char **envp)
+{
 	(void)argc;
 	(void)argv;
 	(void)envp;
 	exit_status = 0;
-
 	vars()->path_arg = create_path(envp);
 	vars()->envp = duplicate_envp(envp);
-
 	process_input();
-
-	return 0;
+	return (0);
 }

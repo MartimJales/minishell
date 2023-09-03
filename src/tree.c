@@ -39,32 +39,6 @@ struct cmd	*parsepipe(t_list *lst)
 	return ((struct cmd *)pipe);
 }
 
-int	ft_redir_signal(char *s)
-{
-	if (strncmp(">>", s, 2) == 0)
-		return (APPEND);
-	if (strncmp("<<", s, 2) == 0)
-		return (HEREDOC);
-	if (*s == '>')
-		return (OUT);
-	if (*s == '<')
-		return (IN);
-	return (0); 
-}
-
-int	redir_mode(int redir_signal)
-{
-	if (redir_signal == IN)
-		return (O_RDONLY);
-	if (redir_signal == OUT)
-		return (O_WRONLY | O_CREAT | O_TRUNC);
-	if (redir_signal == APPEND)
-		return (O_WRONLY | O_CREAT);
-	if (redir_signal == HEREDOC)
-		return (HEREDOC);
-	return (0);
-}
-
 struct cmd	*create_redircmd(t_list *lst, char *filename, int redir_signal)
 {
 	struct redircmd	*cmd;
@@ -113,7 +87,7 @@ struct cmd	*parseredir(t_list *lst)
 	return (parseexec(old));
 }
 
-struct cmd *parseexec(t_list *lst)
+struct cmd	*parseexec(t_list *lst)
 {
 	struct execcmd	*cmd;
 

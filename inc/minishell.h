@@ -119,6 +119,31 @@ char *ft_itoa(int nbr);
 int is_builtin(char *cmd);
 void process_and_execute(struct cmd *tree);
 long long int	ft_atoi(char *str);
+int	check_alnum(const char *input_string);
+int	check_num(const char *input_string);
+int	builtin_pipe(struct cmd *cmd);
+void	setup_signals(void);
+void	cleanup(void);
+void	panic(char *error, int status);
+int	safe_exit(int status);
+int	var_exists(char **envp, char *var);
+void heredoc(const char *delimiter, int pipe_read_fd);
+t_list *create_token(int start, int end, int state);
+t_list *create_space_token( int state);
+int	is_redir(const char *str);
+void subdivide_tokens(void);
+void junta_tokens(t_list *lst);
+int exec_export(struct execcmd *ecmd);
+int exec_unset(struct execcmd *ecmd);
+int exec_cd(struct execcmd *ecmd);
+int	exec_exit(struct execcmd *ecmd);
+void	exec_pipe(struct pipecmd *pcmd);
+void	exec_redir(struct redircmd *rcmd);
+char	*exp_dollar(char *s, char **envp);
+int	is_special(const char *str, char **special);
+void add_token(t_list **list, const char *token_str, int state);
+int	redir_mode(int redir_signal);
+int	ft_redir_signal(char *s);
 
 //MIT functions
 char **list_to_array(t_list *lst);
@@ -126,6 +151,7 @@ char **list_to_array(t_list *lst);
 //EXEC functions
 void    exec_tree(struct cmd *root);
 int exec_env(int declare);
+int	builtin_exec(struct cmd *cmd);
 
 //Linked Lists functions
 void	ft_lstadd_back(t_list **lst, t_list *new);

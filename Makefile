@@ -15,11 +15,25 @@ FLAGS    := -Wall -Wextra -Werror
 ################################################################################
 
 SRCS        :=      src/aux.c \
+						  src/aux2.c \
+						  src/aux3.c \
+						  src/aux4.c \
+						  src/aux5.c \
                           src/main.c \
+						  src/cd.c \
+						  src/exit.c \
+						  src/export.c \
+						  src/unset.c \
+						  src/heredoc.c \
+						  src/redir.c \
+						  src/execpipe.c\
                           src/lexer.c \
 						  src/llist.c \
 						  src/exec.c \
 						  src/mit.c \
+						  src/lexer2.c \
+						  src/lexer3.c \
+						  src/lexer4.c \
 						  src/tree.c \
 
 OBJS        := $(SRCS:.c=.o)

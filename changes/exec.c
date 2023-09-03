@@ -117,7 +117,6 @@ int	check_num(const char *input_string)
 	return (1);
 }
 
-
 int	var_exists(char **envp, char *var)
 {
 	int	i;
@@ -384,8 +383,78 @@ void exec_single_command(struct execcmd *ecmd)
 	}
 }
 
+void heredoc(const char *delimiter) {
+    char *inputBuffer = NULL;  // Buffer to store user input
+    char *multilineInput = NULL; // Buffer to store multiline input
+
+    pid_t pid = fork();
+    if (pid == -1) {
+        perror("Error forking");
+        exit(1);
+    } else if (pid == 0) {
+        // Child process
+        close(vars()->pipefd[1]);  // Close write end of the pipe
+
+        // Redirect pipe read end to stdin
+        dup2(vars()->pipefd[0], STDIN_FILENO);
+        close(vars()->pipefd[0]);  // Close the pipe read end
+
+        // Run the cat command (or other desired command)
+        execlp("cat", "cat", NULL);
+
+        // If execlp returns (which indicates an error), print an error message
+        perror("Error executing cat");
+        exit(1);
+    } else {
+        // Parent process
+        close(vars()->pipefd[0]);  // Close read end of the pipe
+
+        while (1) {
+            // Prompt the user for input
+            inputBuffer = readline(">");
+            if (inputBuffer == NULL) {
+                // EOF or error reading input
+                break;
+            }
+
+            // Check if input matches the delimiter
+            if (strcmp(inputBuffer, delimiter) == 0) {
+                if (multilineInput) {
+                    // Send the multiline input
+                    write(vars()->pipefd[1], multilineInput, strlen(multilineInput));
+                    free(multilineInput);
+                    multilineInput = NULL;
+                }
+                free(inputBuffer);
+                break; // Break out of the loop if the delimiter is matched
+            }
+
+            // Append input to multiline buffer
+            if (multilineInput) {
+                multilineInput = realloc(multilineInput, strlen(multilineInput) + strlen(inputBuffer) + 1);
+                strcat(multilineInput, inputBuffer);
+				strcat(multilineInput, "\n");
+            } else {
+                multilineInput = strdup(inputBuffer);
+				strcat(multilineInput, "\n");
+            }
+
+            // Add input to history
+            add_history(inputBuffer);
+            free(inputBuffer);
+        }
+
+        close(vars()->pipefd[1]);  // Close the write end of the pipe
+
+        // Wait for the child process to complete
+        waitpid(pid, NULL, 0);
+    }
+}
+
 void exec_redir(struct redircmd *rcmd) {
 	close(rcmd->fd);
+	if (rcmd->mode == HEREDOC)
+		heredoc(rcmd->file);
 	if (open(rcmd->file, rcmd->mode, 0664) < 0)
 	{
         // perror("open");
@@ -435,7 +504,6 @@ void exec_tree(struct cmd *root)
 {
 	if (!root) 
 		return ;
-
 	switch (root->type)
 	{
         case EXEC:

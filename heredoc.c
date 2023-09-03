@@ -2,22 +2,25 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/types.h>
 #include <sys/wait.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 
-int main() {
-    const char *delimiter = "ola\n";
-    char inputBuffer[256];  // Buffer to store user input
+void heredoc(const char *delimiter) {
+    char *inputBuffer = NULL;  // Buffer to store user input
+    char *multilineInput = NULL; // Buffer to store multiline input
 
     int pipefd[2];
     if (pipe(pipefd) == -1) {
         perror("Error creating pipe");
-        return 1;
+        exit(1);
     }
 
     pid_t pid = fork();
     if (pid == -1) {
         perror("Error forking");
-        return 1;
+        exit(1);
     } else if (pid == 0) {
         // Child process
         close(pipefd[1]);  // Close write end of the pipe
@@ -31,28 +34,44 @@ int main() {
 
         // If execlp returns (which indicates an error), print an error message
         perror("Error executing cat");
-        return 1;
+        exit(1);
     } else {
         // Parent process
         close(pipefd[0]);  // Close read end of the pipe
 
         while (1) {
             // Prompt the user for input
-            printf("Enter input matching the delimiter \"%s\":\n", delimiter);
-            fflush(stdout);
-
-            // Read user input
-            fgets(inputBuffer, sizeof(inputBuffer), stdin);
+            inputBuffer = readline(">");
+            if (inputBuffer == NULL) {
+                // EOF or error reading input
+                break;
+            }
 
             // Check if input matches the delimiter
-            printf("buff = {%s}\n", inputBuffer);
             if (strcmp(inputBuffer, delimiter) == 0) {
-                printf("caiu\n");
+                if (multilineInput) {
+                    // Send the multiline input
+                    write(pipefd[1], multilineInput, strlen(multilineInput));
+                    free(multilineInput);
+                    multilineInput = NULL;
+                }
+                free(inputBuffer);
                 break; // Break out of the loop if the delimiter is matched
             }
 
-            // Write the input to the pipe
-            write(pipefd[1], inputBuffer, strlen(inputBuffer));
+            // Append input to multiline buffer
+            if (multilineInput) {
+                multilineInput = realloc(multilineInput, strlen(multilineInput) + strlen(inputBuffer) + 1);
+                strcat(multilineInput, inputBuffer);
+				strcat(multilineInput, "\n");
+            } else {
+                multilineInput = strdup(inputBuffer);
+				strcat(multilineInput, "\n");
+            }
+
+            // Add input to history
+            add_history(inputBuffer);
+            free(inputBuffer);
         }
 
         close(pipefd[1]);  // Close the write end of the pipe
@@ -60,6 +79,14 @@ int main() {
         // Wait for the child process to complete
         waitpid(pid, NULL, 0);
     }
+}
 
+int main()
+{
+    const char *delimiter = "ola";
+    heredoc(delimiter);
     return 0;
 }
+
+
+
