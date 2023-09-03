@@ -30,24 +30,14 @@ int	redir_mode(int redir_signal)
 
 void	exec_redir(struct redircmd *rcmd)
 {
-	int	pipefd[2];
 
-	if (pipe(pipefd) == -1)
-	{
-		perror("Error creating pipe");
-		exit_status = EXIT_FAILURE;
-		return ;
-	}
-	close(rcmd->fd);
 	if (rcmd->mode == HEREDOC) 
+		heredoc(rcmd->file);
+	else
 	{
-		heredoc(rcmd->file, pipefd[0]);
+		close(rcmd->fd);
+		if (open(rcmd->file, rcmd->mode, 0664) < 0)
+			exit_status = EXIT_FAILURE;
 	}
-	else if (open(rcmd->file, rcmd->mode, 0664) < 0)
-	{
-		exit_status = EXIT_FAILURE;
-	}
-	dup2(pipefd[0], STDIN_FILENO);
-	close(pipefd[0]);
 	exec_tree(rcmd->cmd);
 }

@@ -127,7 +127,7 @@ void	cleanup(void);
 void	panic(char *error, int status);
 int	safe_exit(int status);
 int	var_exists(char **envp, char *var);
-void heredoc(const char *delimiter, int pipe_read_fd);
+void heredoc(const char *delimiter);
 t_list *create_token(int start, int end, int state);
 t_list *create_space_token( int state);
 int	is_redir(const char *str);

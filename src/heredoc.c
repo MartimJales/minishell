@@ -2,42 +2,64 @@
 
 extern int exit_status;
 
-void heredoc(const char *delimiter, int pipe_read_fd) {
-    char *inputBuffer = NULL;  // Buffer to store user input
-    char *multilineInput = NULL; // Buffer to store multiline input
+void heredoc(const char *delimiter)
+{
+    char *inputBuffer = NULL;      // Buffer to store user input
+    char *multilineInput = NULL;  // Buffer to store multiline input
 
-    while (1) {
-        // Prompt the user for input
+    if (pipe(vars()->pipefd) == -1)
+    {
+        perror("Error creating pipe");
+        exit(EXIT_FAILURE); // Exit gracefully on error
+    }
+
+    while (1)
+    {
         inputBuffer = readline(">");
-        if (inputBuffer == NULL) {
-            // EOF or error reading input
+        if (inputBuffer == NULL)
             break;
-        }
-
-        // Check if input matches the delimiter
-        if (strcmp(inputBuffer, delimiter) == 0) {
-            if (multilineInput) {
-                // Send the multiline input to the pipe
-                write(pipe_read_fd, multilineInput, strlen(multilineInput));
+		printf("%s == %s\n", inputBuffer, delimiter);
+        if (strcmp(inputBuffer, delimiter) == 0)
+        {
+            if (multilineInput)
+            {
+                write(vars()->pipefd[1], multilineInput, strlen(multilineInput));
                 free(multilineInput);
                 multilineInput = NULL;
             }
             free(inputBuffer);
-            break; // Break out of the loop if the delimiter is matched
+            break;
         }
 
-        // Append input to multiline buffer
-        if (multilineInput) {
-            multilineInput = realloc(multilineInput, strlen(multilineInput) + strlen(inputBuffer) + 1);
+        if (multilineInput)
+        {
+            char *temp = realloc(multilineInput, strlen(multilineInput) + strlen(inputBuffer) + 2);
+            if (temp == NULL)
+            {
+                perror("Error reallocating memory");
+                free(inputBuffer);
+                break;
+            }
+            multilineInput = temp;
             strcat(multilineInput, inputBuffer);
             strcat(multilineInput, "\n");
-        } else {
+        }
+        else
+        {
             multilineInput = strdup(inputBuffer);
+            if (multilineInput == NULL)
+            {
+                perror("Error allocating memory");
+                free(inputBuffer);
+                break;
+            }
             strcat(multilineInput, "\n");
         }
-
-        // Add input to history
         add_history(inputBuffer);
         free(inputBuffer);
     }
+
+    close(vars()->pipefd[1]); // Close the write end of the pipe when done
+    dup2(vars()->pipefd[0], STDIN_FILENO);
+    close(vars()->pipefd[0]); // Close the read end of the pipe when done
 }
