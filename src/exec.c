@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 00:16:50 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/03 11:37:40 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/03 12:48:32 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void exec_single_command(struct execcmd *ecmd)
 	{
 		execve(ecmd->argv[0], ecmd->argv, vars()->envp);
 		exit_status = 127;
-		fprintf(stderr, "%s: command not found", ecmd->argv[0]);
+		fprintf(stderr, "%s: command not found\n", ecmd->argv[0]);
 		exit(127);
 	}
 }

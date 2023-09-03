@@ -66,13 +66,14 @@ void	update_var_to_envp(char *var, char *new_value)
 			envp[index][strlen(var)] == '=')
 		{
 			free(envp[index]);
-			envp[index] = (char *)malloc(strlen(new_value));
+			// printf("junta = {%s}\n", junta_strings(strdup(var), strdup("=")));
+			envp[index] = junta_strings(strdup(var), "=");
+			envp[index] = junta_strings(envp[index], new_value);
 			if (!envp[index])
 			{
 				perror("malloc");
 				exit(1);
 			}
-			envp[index] = strdup(new_value);
 			break ;
 		}
 		index++;
@@ -82,15 +83,15 @@ void	update_var_to_envp(char *var, char *new_value)
 int	exec_export(struct execcmd *ecmd)
 {
 	int		i;
-	char	*var;
+	char	**var;
 
 	i = 1;
 	if (ecmd->argv[1] == NULL)
 		return (exec_env(1));
 	while (ecmd->argv[i] != NULL)
 	{
-		var = ft_split(ecmd->argv[i], '=')[0];
-		if (!check_alnum(var))
+		var = ft_split(ecmd->argv[i], '=');
+		if (!check_alnum(var[0]))
 		{
 			write(2, " not a valid identifier\n", \
 			ft_strlen(" not a valid identifier\n"));
@@ -98,8 +99,8 @@ int	exec_export(struct execcmd *ecmd)
 		}
 		if (validate_format(ecmd->argv[i]))
 		{
-			if (var_exists(vars()->envp, var))
-				update_var_to_envp(var, ecmd->argv[i]);
+			if (var_exists(vars()->envp, var[0]))
+				update_var_to_envp(var[0], var[1]);
 			else
 				add_variable_to_envp(ecmd->argv[i]);
 		}

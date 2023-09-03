@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 10:17:18 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/03 11:34:19 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/03 14:09:00 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,8 @@ void process_input() {
 		}
 		vars()->num_sc = 14;
 		create_sc();
-		vars()->s = readline("minishell>");
 		setup_signals();
+		vars()->s = readline("minishell>");
 		if (vars()->s == NULL)
 			break;
 		// if (strncmp(vars()->s, "exit", ft_strlen("exit")) == 0) {
@@ -88,7 +88,7 @@ void process_input() {
 		// debug_tree(tree);
 		process_and_execute(tree);
 		cleanup();
-		exit (exit_status);
+		//exit (exit_status);
 	}
 }
 
