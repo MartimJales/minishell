@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 13:00:05 by mjales            #+#    #+#             */
-/*   Updated: 2023/08/30 22:09:39 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/03 23:35:32 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,8 +88,10 @@ void lexer(char **envp)
 			process_double_quote_state(&old, i, &state);
 			space = 0;
 		}
-		else if (elems()->s[i] == ' ' && state == 0)
+		else if (elems()->s[i] == ' ' && state == 0){
 			process_space_state(&old, i, &state, &space);
+			// print_tokens(vars()->tokens);
+		}
 		else if (is_redir(&vars()->s[i]) && state == 0) 
 		{
 			process_space_state(&old, i, &state, &space);
@@ -109,13 +111,8 @@ void lexer(char **envp)
 	}
 	ft_lstadd_back(&vars()->tokens, create_token(old, i, state));
 	find_dollar(envp);
-    // print_tokens(vars()->tokens);
 	junta_tokens(vars()->tokens);
-    // printf("JUNTA\n");
-    // print_tokens(vars()->tokens);
 	subdivide_tokens();
-    // printf("DIVIDE \n");
-    // print_tokens(vars()->tokens);
 }
 
 

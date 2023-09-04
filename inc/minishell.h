@@ -66,6 +66,7 @@ typedef struct s_vars
 	int		token_len;
 	int		forked;
 	int		pipefd[2];
+	t_list	*prev;
 }	t_vars;
 
 struct	cmd {
@@ -106,13 +107,12 @@ int	ft_isalnum(int c);
 char	*ft_strnstr(const char *big, const char *little, size_t len);
 size_t	is_delimiter(const char *s, char **sc, size_t *len);
 size_t	next_pos_sc(char const *s, char **sc);
-char	**split_sc(char const *s, char **sc);
 char	**create_path(char *envp[]);
 char	**check_path(t_list *args, char **path_arg);
 char	*junta_strings(char *s1, char *s2);
 char	*ft_strjoin(char const *s1, char const *s2);
 char	**ft_split(char const *s, char c);
-void	free_tokens(void);
+void	free_tokens(t_list *lst);
 void	signal_cmd(int sig);
 void print_tokens(t_list * current);
 char *ft_itoa(int nbr);

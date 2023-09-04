@@ -65,32 +65,6 @@ size_t	string_number_sc(char const *s, char **sc)
 	return (num);
 }
 
-char	**split_sc(char const *s, char **sc)
-{
-	size_t	num;
-	size_t	i;
-	size_t	len;
-	char	**arr;
-
-	num = string_number_sc(s, sc);
-	arr = malloc(sizeof(char *) * (num + 1));
-	if (!arr)
-		return (NULL);
-	i = 0;
-	while (i < num)
-	{
-		while (is_delimiter(s, sc, &len))
-			s += len;
-		len = next_pos_sc(s, sc);
-		arr[i] = malloc(len + 1);
-		ft_strlcpy(arr[i], s, len + 1);
-		s = s + len;
-		i++;
-	}
-	arr[i] = NULL;
-	return (arr);
-}
-
 char	*ft_strjoin(char const *s1, char const *s2)
 {
 	size_t	i;

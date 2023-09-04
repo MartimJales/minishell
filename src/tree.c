@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/21 00:14:27 by mjales            #+#    #+#             */
-/*   Updated: 2023/08/31 00:32:56 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/03 23:49:27 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,34 +58,38 @@ struct cmd	*create_redircmd(t_list *lst, char *filename, int redir_signal)
 	return ((struct cmd *)cmd);
 }
 
-struct cmd	*parseredir(t_list *lst)
+struct cmd *parseredir(t_list *lst)
 {
-	t_list	*old;
-	t_list	*prev;
-	int		redir_signal;
+    t_list *old = lst;
+    t_list *prev = NULL;
+    t_list *current = lst;
+    int redir_signal = 0;
 
-	old = lst;
-	prev = malloc(sizeof(t_list));
-	prev->next = lst;
-	if (!lst)
-		return (NULL);
-	while (lst)
-	{
-		if (lst->content->state == DEF)
-			redir_signal = ft_redir_signal(lst->content->s);
-		if (redir_signal != 0)
-		{
-			prev->next = prev->next->next->next;
-			return (create_redircmd(old, lst->next->content->s, redir_signal));
-		}
-		else 
-		{
-			prev = prev->next;
-			lst = lst->next;
-		}
-	}
-	return (parseexec(old));
+    if (!lst)
+        return NULL;
+
+    while (current)
+    {
+        if (current->content->state == DEF)
+            redir_signal = ft_redir_signal(current->content->s);
+        
+        if (redir_signal != 0)
+        {
+            if (prev)  // If there's a previous node
+                prev->next = current->next->next;
+            else  // If the matching node is the first node
+                old = current->next->next;
+
+            return create_redircmd(old, current->next->content->s, redir_signal);
+        }
+
+        prev = current;
+        current = current->next;
+    }
+
+    return parseexec(old);
 }
+
 
 struct cmd	*parseexec(t_list *lst)
 {

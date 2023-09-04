@@ -25,7 +25,7 @@ void	setup_signals(void)
 void	cleanup(void)
 {
 	free(vars()->s);
-	free_tokens();
+	free_tokens(vars()->tokens);
 }
 
 int	is_special(const char *str, char **special)

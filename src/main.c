@@ -6,13 +6,103 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 10:17:18 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/03 14:09:00 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/03 23:59:52 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
 int exit_status;
+
+// Forward declarations
+void free_cmd(struct cmd *command);
+void free_list(t_list *lst);
+
+void free_elems(t_elems *elem) {
+    if (!elem) return;
+    free(elem->s);
+    free(elem);
+}
+
+void free_list(t_list *lst) {
+    t_list *temp;
+    while (lst) {
+        temp = lst;
+        lst = lst->next;
+        free_elems(temp->content);
+        free(temp);
+    }
+}
+
+void free_vars(t_vars *vars) {
+    if (!vars) return;
+    free(vars->s);
+    free_list(vars->tokens);
+    // Assuming sc, path_arg, and envp are null-terminated arrays
+    if (vars->sc) {
+        for (int i = 0; vars->sc[i]; i++) {
+            free(vars->sc[i]);
+        }
+        free(vars->sc);
+    }
+    if (vars->path_arg) {
+        for (int i = 0; vars->path_arg[i]; i++) {
+            free(vars->path_arg[i]);
+        }
+        free(vars->path_arg);
+    }
+    if (vars->envp) {
+        for (int i = 0; vars->envp[i]; i++) {
+            free(vars->envp[i]);
+        }
+        free(vars->envp);
+    }
+    free(vars);
+}
+
+void free_execcmd(struct execcmd *ecmd) {
+    if (!ecmd) return;
+    if (ecmd->argv) {
+        for (int i = 0; ecmd->argv[i]; i++) {
+            free(ecmd->argv[i]);
+        }
+        free(ecmd->argv);
+    }
+    free(ecmd);
+}
+
+void free_redircmd(struct redircmd *rcmd) {
+    if (!rcmd) return;
+    free_cmd(rcmd->cmd);
+    free(rcmd->file);
+    free(rcmd);
+}
+
+void free_pipecmd(struct pipecmd *pcmd) {
+    if (!pcmd) return;
+    free_cmd(pcmd->left);
+    free_cmd(pcmd->right);
+    free(pcmd);
+}
+
+void free_cmd(struct cmd *command) {
+    if (!command) return;
+    switch (command->type) {
+        case EXEC:  // Assuming 'e' for execcmd
+            free_execcmd((struct execcmd *)command);
+            break;
+        case REDIR:  // Assuming 'r' for redircmd
+            free_redircmd((struct redircmd *)command);
+            break;
+        case PIPE:  // Assuming 'p' for pipecmd
+            free_pipecmd((struct pipecmd *)command);
+            break;
+        default:
+            // If there are other command types, handle them here
+            break;
+    }
+}
+
 
 int	is_builtin_tree(struct cmd *cmd)
 {
@@ -69,13 +159,7 @@ void process_input() {
 		setup_signals();
 		vars()->s = readline("minishell>");
 		if (vars()->s == NULL)
-			break;
-		// if (strncmp(vars()->s, "exit", ft_strlen("exit")) == 0) {
-		//     printf("vamos sair desta merda\n");
-		//     exit_program(vars()->s);
-		//     cleanup();
-		//     break;
-		// }
+			break ;
 		if (all_space(vars()->s)) {
 			cleanup();
 			continue;
@@ -85,10 +169,10 @@ void process_input() {
 		elems()->s = vars()->s;
 		lexer(vars()->envp);
 		struct cmd *tree = parsepipe(vars()->tokens);
-		// debug_tree(tree);
 		process_and_execute(tree);
-		cleanup();
-		//exit (exit_status);
+		free_cmd(tree);
+		// cleanup();
+		exit (exit_status);
 	}
 }
 
@@ -128,5 +212,6 @@ int	main(int argc, char **argv, char **envp)
 	vars()->path_arg = create_path(envp);
 	vars()->envp = duplicate_envp(envp);
 	process_input();
+	free(vars()->sc);
 	return (0);
 }

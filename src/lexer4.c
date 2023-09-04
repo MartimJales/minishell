@@ -69,7 +69,8 @@ void subdivide_tokens(void)
 {
     t_list *new_tokens;
     t_list *current = vars()->tokens;
-    for (int j = 0; j < 14; j++){
+    for (int j = 0; j < 14; j++)
+    {
         new_tokens = NULL;
         current = vars()->tokens;
         while (current != NULL) {
@@ -92,73 +93,28 @@ void subdivide_tokens(void)
                 free(subtokens);
             }
             else {
+				// printf("LEAK\n");
+				// print_tokens(new_tokens);
                 add_token(&new_tokens, current->content->s, state);
+				// print_tokens(new_tokens);
             }
             current = current->next;
         }
+        free_tokens(vars()->tokens);
         vars()->tokens = new_tokens;
     }
     // print_tokens(vars()->tokens);
 }
 
-
-
-// t_list *add_subtoken(t_list *tokens, char *part, int state, char *sc_element) {
-//     if (strstr(part, sc_element)) {
-//         add_token(&tokens, strndup(part, strstr(part, sc_element) - part), state);
-//         add_token(&tokens, sc_element, state);
-//         add_token(&tokens, strstr(part, sc_element) + ft_strlen(sc_element), state);
-//     } else {
-//         add_token(&tokens, part, state);
-//     }
-//     return tokens;
-// }
-
-// t_list *process_subtokens(t_list *current, char *sc_element, t_list *new_tokens) {
-//     int state = current->content->state;
-
-//     if (state == DEF && !is_special(current->content->s, vars()->sc)) {
-//         char **subtokens = ft_split(current->content->s, ' ');
-//         for (size_t i = 0; subtokens[i] != NULL; i++) {
-//             char *part = subtokens[i];
-//             new_tokens = add_subtoken(new_tokens, part, state, sc_element);
-//             free(part);
-//         }
-//         free(subtokens);
-//     } else {
-//         new_tokens = add_subtoken(new_tokens, current->content->s, state, sc_element);
-//     }
-
-//     return new_tokens;
-// }
-
-// void process_special_element(int j) {
-//     t_list *new_tokens = NULL;
-//     t_list *current = vars()->tokens;
-
-//     while (current != NULL) {
-//         new_tokens = process_subtokens(current, vars()->sc[j], new_tokens);
-//         current = current->next;
-//     }
-
-//     vars()->tokens = new_tokens;
-// }
-
-// void subdivide_tokens(void) {
-//     for (int j = 0; j < 14; j++) {
-//         process_special_element(j);
-//     }
-//     // print_tokens(vars()->tokens);
-// }
-
-void free_tokens(void)
+void free_tokens(t_list *lst)
 {
 	t_list	*current;
 	t_list	*next;
 
-	current = vars()->tokens;
+	current = lst;
 	while (current != NULL)
 	{
+		// printf("clean = {%s}\n", current->content->s);
 		next = current->next;
 		free(current->content->s);
 		free(current->content);

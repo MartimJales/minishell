@@ -47,9 +47,11 @@ char	**check_path(t_list *args, char **path_arg)
 		buffer = junta_strings(buffer, teste[0]);
 		if (access(buffer, F_OK) == 0)
 		{
-			free(teste[0]);
+			// printf("teste[0] = {%s}\n", teste[0]);
+			// free(teste[0]);
 			teste[0] = malloc(ft_strlen(buffer) + 1);
 			ft_strlcpy(teste[0], buffer, ft_strlen(buffer) + 1);
+			// printf("teste[0] = {%s}\n", teste[0]);
 			free(buffer);
 			return (teste);
 		}

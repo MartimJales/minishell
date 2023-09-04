@@ -64,20 +64,15 @@ char	*exp_dollar(char *s, char **envp)
 void junta_tokens(t_list *lst)
 {
 	t_list	*cur;
-	t_list	*prev;
 	t_list	*tmp;
 	char	*concatenated_str;
 
 	cur = lst;
-	prev = malloc(sizeof(t_list *));
-	prev->next = lst;
 	while (cur && cur->next)
 	{
-		if (strcmp(cur->content->s, " ") != 0 && \
-strcmp(cur->next->content->s, " ") != 0)
+		if (strcmp(cur->content->s, " ") != 0 && strcmp(cur->next->content->s, " ") != 0)
 		{
-			concatenated_str = \
-junta_strings(cur->content->s, cur->next->content->s);
+			concatenated_str = junta_strings(cur->content->s, cur->next->content->s);
 
 			cur->content->s = concatenated_str;
 			if (cur->next->content->state > cur->content->state)
@@ -88,7 +83,6 @@ junta_strings(cur->content->s, cur->next->content->s);
 		}
 		else
 		{
-			prev = cur;
 			cur = cur->next;
 		}
 	}
