@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:04:53 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/05 00:38:58 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/05 09:29:31 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,21 @@ void	update_var_to_envp(char *var, char *new_value)
 	}
 }
 
+int	clean_var(char **var, int status)
+{
+	int	i;
+
+	i = 0;
+	while (var[i])
+	{
+		free(var[i]);
+		i++;
+	}
+	free(var);
+	return (safe_exit(status));
+}
+
+
 int	exec_export(struct execcmd *ecmd)
 {
 	int		i;
@@ -113,10 +128,7 @@ int	exec_export(struct execcmd *ecmd)
 		{
 			write(2, " not a valid identifier\n", \
 			ft_strlen(" not a valid identifier\n"));
-			for (int i = 0; var[i]; i++)
-				free(var[i]);
-			free(var);
-			return (safe_exit(EXIT_FAILURE));
+			return (clean_var(var, EXIT_FAILURE));
 		}
 		if (validate_format(ecmd->argv[i]))
 		{
@@ -127,28 +139,5 @@ int	exec_export(struct execcmd *ecmd)
 		}
 		i++;
 	}
-	for (int i = 0; var[i]; i++)
-				free(var[i]);
-			free(var);
-	return (safe_exit(EXIT_SUCCESS));
-}
-
-int	exec_env(int declare)
-{
-	int	i;
-
-	i = 0;
-	while (vars()->envp[i] != NULL)
-	{
-		if (declare)
-			printf("declare -x %s=\"%s\"\n", \
-ft_split(vars()->envp[i], '=')[0], strchr(vars()->envp[i], '=') + 1);
-		else
-			printf("%s\n", vars()->envp[i]);
-		i++;
-	}
-	exit_status = 0;
-	if (vars()->forked)
-		exit(0);
-	return (0);
+	return (clean_var(var, EXIT_SUCCESS));
 }

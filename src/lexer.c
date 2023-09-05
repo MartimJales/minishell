@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 13:00:05 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/04 23:02:12 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/05 09:36:29 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 extern int	exit_status;
 
-void	process_quote_state(int *old, int i, int *state)
+void	process_quote_state(int *old, int i, int *state, int *space)
 {
 	if (*state == 0)
 	{
@@ -28,9 +28,10 @@ void	process_quote_state(int *old, int i, int *state)
 		*old = i + 1;
 		*state = 0;
 	}
+	*space = 0;
 }
 
-void	process_double_quote_state(int *old, int i, int *state)
+void	process_double_quote_state(int *old, int i, int *state, int *space)
 {
 	if (*state == 0)
 	{
@@ -44,6 +45,7 @@ void	process_double_quote_state(int *old, int i, int *state)
 		*old = i + 1;
 		*state = 0;
 	}
+	*space = 0;
 }
 
 void	process_space_state(int *old, int i, int *state, int *space)
@@ -75,22 +77,14 @@ void	lexer(char **envp)
 	old = 0;
 	state = 0;
 	space = 0;
-
 	while (elems()->s[++i])
 	{
 		if (elems()->s[i] == '\'')
-		{
-			process_quote_state(&old, i, &state);
-			space = 0;
-		}
+			process_quote_state(&old, i, &state, &space);
 		else if (elems()->s[i] == '\"')
-		{
-			process_double_quote_state(&old, i, &state);
-			space = 0;
-		}
-		else if (elems()->s[i] == ' ' && state == 0){
+			process_double_quote_state(&old, i, &state, &space);
+		else if (elems()->s[i] == ' ' && state == 0)
 			process_space_state(&old, i, &state, &space);
-		}
 		else if (is_redir(&vars()->s[i]) && state == 0) 
 		{
 			process_space_state(&old, i, &state, &space);
@@ -111,7 +105,6 @@ void	lexer(char **envp)
 	if (old != i)
 		ft_lstadd_back(&vars()->tokens, create_token(old, i, state));
 	find_dollar(envp);
-
 	junta_tokens(vars()->tokens);
 	subdivide_tokens();
 }

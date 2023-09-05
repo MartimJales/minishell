@@ -35,6 +35,7 @@ SRCS        :=      src/aux.c \
 						  src/lexer3.c \
 						  src/lexer4.c \
 						  src/tree.c \
+						  src/env.c \
 
 OBJS        := $(SRCS:.c=.o)
 
