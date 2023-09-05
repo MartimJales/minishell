@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   aux3.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/09/04 23:04:11 by mjales            #+#    #+#             */
+/*   Updated: 2023/09/04 23:07:48 by mjales           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/minishell.h"
 
 extern int exit_status;
@@ -14,7 +26,7 @@ char	*junta_strings(char *s1, char *s2)
 	return (s1);
 }
 
-int is_builtin(char *cmd)
+int	is_builtin(char *cmd)
 {
 	if (strcmp("export", cmd) == 0)
 		return (1);
@@ -37,7 +49,6 @@ char	**check_path(t_list *args, char **path_arg)
 
 	teste = list_to_array(args);
 	i = 0;
-	// Tenho que alterar isto para ./ e outras exceções
 	if (is_builtin(teste[i]) || teste[i][0] == '/')
 		return (teste);
 	while (path_arg[i])
@@ -47,11 +58,9 @@ char	**check_path(t_list *args, char **path_arg)
 		buffer = junta_strings(buffer, teste[0]);
 		if (access(buffer, F_OK) == 0)
 		{
-			// printf("teste[0] = {%s}\n", teste[0]);
-			// free(teste[0]);
+			free(teste[0]);
 			teste[0] = malloc(ft_strlen(buffer) + 1);
 			ft_strlcpy(teste[0], buffer, ft_strlen(buffer) + 1);
-			// printf("teste[0] = {%s}\n", teste[0]);
 			free(buffer);
 			return (teste);
 		}

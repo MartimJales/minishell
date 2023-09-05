@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   heredoc.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/09/04 23:05:01 by mjales            #+#    #+#             */
+/*   Updated: 2023/09/04 23:05:02 by mjales           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/minishell.h"
 
 extern int exit_status;
@@ -41,8 +53,10 @@ void heredoc(const char *delimiter)
                 break;
             }
             multilineInput = temp;
-            strcat(multilineInput, inputBuffer);
-            strcat(multilineInput, "\n");
+			multilineInput = junta_strings(multilineInput, inputBuffer);
+			multilineInput = junta_strings(multilineInput, "\n");
+            // strcat(multilineInput, inputBuffer);
+            // strcat(multilineInput, "\n");
         }
         else
         {
@@ -53,7 +67,7 @@ void heredoc(const char *delimiter)
                 free(inputBuffer);
                 break;
             }
-            strcat(multilineInput, "\n");
+            multilineInput = junta_strings(multilineInput, "\n");// strcat(multilineInput, "\n");
         }
         add_history(inputBuffer);
         free(inputBuffer);

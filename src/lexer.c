@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 13:00:05 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/03 23:35:32 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/04 23:02:12 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 extern int	exit_status;
 
-void process_quote_state(int *old, int i, int *state)
+void	process_quote_state(int *old, int i, int *state)
 {
 	if (*state == 0)
 	{
@@ -30,7 +30,7 @@ void process_quote_state(int *old, int i, int *state)
 	}
 }
 
-void process_double_quote_state(int *old, int i, int *state)
+void	process_double_quote_state(int *old, int i, int *state)
 {
 	if (*state == 0)
 	{
@@ -46,7 +46,7 @@ void process_double_quote_state(int *old, int i, int *state)
 	}
 }
 
-void process_space_state(int *old, int i, int *state, int *space)
+void	process_space_state(int *old, int i, int *state, int *space)
 {
 	if (*state == 0)
 	{
@@ -57,14 +57,14 @@ void process_space_state(int *old, int i, int *state, int *space)
 	}
 }
 
-void process_new_space(int *state, int *space)
+void	process_new_space(int *state, int *space)
 {
 	ft_lstadd_back(&vars()->tokens, create_space_token(*state));
 	*state = 0;
 	*space = 0;
 }
 
-void lexer(char **envp)
+void	lexer(char **envp)
 {
 	int	i;
 	int	old;
@@ -90,7 +90,6 @@ void lexer(char **envp)
 		}
 		else if (elems()->s[i] == ' ' && state == 0){
 			process_space_state(&old, i, &state, &space);
-			// print_tokens(vars()->tokens);
 		}
 		else if (is_redir(&vars()->s[i]) && state == 0) 
 		{
@@ -109,8 +108,10 @@ void lexer(char **envp)
 			space = 0;
 		}
 	}
-	ft_lstadd_back(&vars()->tokens, create_token(old, i, state));
+	if (old != i)
+		ft_lstadd_back(&vars()->tokens, create_token(old, i, state));
 	find_dollar(envp);
+
 	junta_tokens(vars()->tokens);
 	subdivide_tokens();
 }

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   lexer4.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/09/04 23:05:19 by mjales            #+#    #+#             */
+/*   Updated: 2023/09/05 00:56:33 by mjales           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/minishell.h"
 
 extern int	exit_status;
@@ -86,6 +98,7 @@ void subdivide_tokens(void)
                         add_token(&new_tokens, vars()->sc[j], state);
                         add_token(&new_tokens, strstr(part, vars()->sc[j]) + ft_strlen(vars()->sc[j]), state);
                     } else {
+						// printf("part = {%s}\n",part);
                         add_token(&new_tokens, part, state);
                     }
                     free(part);
@@ -102,11 +115,12 @@ void subdivide_tokens(void)
         }
         free_tokens(vars()->tokens);
         vars()->tokens = new_tokens;
+		
     }
     // print_tokens(vars()->tokens);
 }
 
-void free_tokens(t_list *lst)
+void	free_tokens(t_list *lst)
 {
 	t_list	*current;
 	t_list	*next;
@@ -114,7 +128,6 @@ void free_tokens(t_list *lst)
 	current = lst;
 	while (current != NULL)
 	{
-		// printf("clean = {%s}\n", current->content->s);
 		next = current->next;
 		free(current->content->s);
 		free(current->content);

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cd.c                                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/09/04 23:04:28 by mjales            #+#    #+#             */
+/*   Updated: 2023/09/04 23:59:04 by mjales           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/minishell.h"
 
 extern int exit_status;
@@ -18,27 +30,37 @@ char	*expand_var(char **envp, char *var)
 	return (NULL);
 }
 
-int exec_cd(struct execcmd *ecmd)
+char	*parse_cd_args(struct execcmd *ecmd)
 {
-	char	old_path[1024];
-	char	new_path[1024];
-
 	if (ecmd->argv[2])
 	{
 		exit_status = 1;
 		fprintf(stderr, "cd: too many arguments\n");
-		return (1);
+		return (NULL);
 	}
 	if (ecmd->argv[1] == NULL || *ecmd->argv[1] == '~')
-		ecmd->argv[1] = strdup(expand_var(vars()->envp, "HOME"));
+		return (strdup(expand_var(vars()->envp, "HOME")));
 	else if (*ecmd->argv[1] == '-')
-		ecmd->argv[1] = strdup(expand_var(vars()->envp, "OLDPWD"));
+		return (strdup(expand_var(vars()->envp, "OLDPWD")));
+
+	return (ecmd->argv[1]);
+}
+
+int	exec_cd(struct execcmd *ecmd)
+{
+	char	old_path[1024];
+	char	new_path[1024];
+	char	*path;
+
+	path = parse_cd_args(ecmd);
+	if (!path) 
+		return (1);
 	if (getcwd(old_path, sizeof(old_path)) == NULL) 
 	{
 		perror("getcwd");
 		return (1);
 	}
-	if (chdir(ecmd->argv[1]) != 0)
+	if (chdir(path) != 0)
 	{
 		exit_status = 1;
 		perror("cd");
@@ -48,7 +70,6 @@ int exec_cd(struct execcmd *ecmd)
 		perror("getcwd");
 		return (1);
 	}
-
 	update_var_to_envp("OLDPWD", strdup(old_path));
 	update_var_to_envp("PWD", strdup(new_path));
 	return (0);

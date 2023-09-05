@@ -1,12 +1,30 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execpipe.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/09/04 23:04:38 by mjales            #+#    #+#             */
+/*   Updated: 2023/09/04 23:59:45 by mjales           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/minishell.h"
 
 extern int exit_status;
 
-void child_pipe(int pipefd[2], struct pipecmd *pcmd)
+void	child_pipe(int pipefd[2], struct pipecmd *pcmd)
 {
-	close(pipefd[0]);
-	dup2(pipefd[1], STDOUT_FILENO);
-	close(pipefd[1]);
+	struct redircmd	*rcmd;
+
+	rcmd = (struct redircmd *)pcmd->left;
+	if (rcmd->mode != HEREDOC)
+	{
+		close(pipefd[0]);
+		dup2(pipefd[1], STDOUT_FILENO);
+		close(pipefd[1]);
+	}
 	exec_tree(pcmd->left);
 }
 

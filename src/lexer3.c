@@ -1,11 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   lexer3.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/09/04 23:05:14 by mjales            #+#    #+#             */
+/*   Updated: 2023/09/05 00:55:52 by mjales           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/minishell.h"
 
 extern int	exit_status;
 
-t_list *create_token(int start, int end, int state)
+t_list	*create_token(int start, int end, int state)
 {
 	int		size;
-	t_list *aux;
+	t_list	*aux;
 
 	size = end - start + 1;
 	aux = ft_lstnew(NULL);
@@ -16,17 +28,15 @@ t_list *create_token(int start, int end, int state)
 	return (aux);
 }
 
-t_list *create_space_token( int state)
+t_list	*create_space_token( int state)
 {
 	t_list	*aux;
 
 	aux = ft_lstnew(NULL);
 	aux->content = malloc(sizeof(t_elems));
-	aux->content->s = malloc(2);
 	aux->content->s = strdup(" ");
 	aux->content->state = state;
 	return (aux);
-    // ft_lstadd_back(&vars()->tokens, aux);
 }
 
 char *replace_dollar(char *input, char **envp) {
@@ -58,7 +68,7 @@ char *replace_dollar(char *input, char **envp) {
 
             strcat(result + index_result, export);
             index_result += strlen(export);
-            free(str_aux); // Free the temporary string memory
+            // free(str_aux); // Free the temporary string memory
             i = j - 1; // Update the main index to reflect the change
         } else {
             result[index_result++] = input[i];
@@ -82,16 +92,25 @@ void	find_dollar(char	**envp)
 	}
 }
 
-void add_token(t_list **list, const char *token_str, int state)
+void	add_token(t_list **list, const char *token_str, int state)
 {
 	t_list	*new_node;
 	t_elems	*content;
+	t_list	*current;
 
 	new_node = ft_lstnew(NULL);
 	content = (t_elems *)malloc(sizeof(t_elems));
 	content->s = strdup(token_str);
 	content->state = state;
 	new_node->content = content;
-	new_node->next = *list;
-	*list = new_node;
+
+	if (*list == NULL)
+		*list = new_node;
+	else 
+	{
+		current = *list;
+		while (current->next)
+			current = current->next;
+		current->next = new_node;
+	}
 }

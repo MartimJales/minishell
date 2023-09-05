@@ -1,8 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   aux2.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/09/04 23:04:02 by mjales            #+#    #+#             */
+/*   Updated: 2023/09/04 23:04:03 by mjales           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/minishell.h"
 
 extern int exit_status;
 
-size_t is_delimiter(const char *s, char **sc, size_t *len)
+size_t	is_delimiter(const char *s, char **sc, size_t *len)
 {
 	size_t	i;
 

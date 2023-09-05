@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   lexer2.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/09/04 23:05:09 by mjales            #+#    #+#             */
+/*   Updated: 2023/09/05 00:53:47 by mjales           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/minishell.h"
 
 extern int	exit_status;
@@ -45,7 +57,6 @@ char	*exp_dollar(char *s, char **envp)
 	int		i;
 
 	i = 0;
-    // printf("s = {%s}\n", s);
 	if (s == NULL)
 		return ("");
 	s = junta_strings(s, "=");
@@ -56,30 +67,33 @@ char	*exp_dollar(char *s, char **envp)
 			break ;
 		i++;
 	}
+	i = ft_strlen(s);
+	free(s);
 	if (!path)
 		return ("$");
-	return (path + ft_strlen(s));
+	return (path + i);
 }
 
-void junta_tokens(t_list *lst)
+void	junta_tokens(t_list *lst)
 {
 	t_list	*cur;
 	t_list	*tmp;
-	char	*concatenated_str;
 
 	cur = lst;
 	while (cur && cur->next)
 	{
-		if (strcmp(cur->content->s, " ") != 0 && strcmp(cur->next->content->s, " ") != 0)
+		if (strcmp(cur->content->s, " ") != 0 && \
+strcmp(cur->next->content->s, " ") != 0)
 		{
-			concatenated_str = junta_strings(cur->content->s, cur->next->content->s);
-
-			cur->content->s = concatenated_str;
+			cur->content->s = \
+junta_strings(cur->content->s, cur->next->content->s);
 			if (cur->next->content->state > cur->content->state)
 				cur->content->state = cur->next->content->state;
-
 			tmp = cur->next;
 			cur->next = tmp->next;
+			free(tmp->content->s);
+			free(tmp->content);
+			free(tmp);
 		}
 		else
 		{

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   export.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/09/04 23:04:53 by mjales            #+#    #+#             */
+/*   Updated: 2023/09/05 00:38:58 by mjales           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/minishell.h"
 
 extern int exit_status;
@@ -24,8 +36,13 @@ void	add_variable_to_envp(char *new_var)
 	}
 	new_envp[new_envp_size] = strdup(new_var);
 	new_envp[new_envp_size + 1] = NULL;
+	i = 0;
+	while (vars()->envp[i++] != NULL)
+		free(vars()->envp[i]);
+	free(vars()->envp);
 	vars()->envp = new_envp;
 }
+
 
 int	validate_format(const char *input)
 {
@@ -36,9 +53,7 @@ int	validate_format(const char *input)
 
 	equal_sign = strchr(input, '=');
 	if (equal_sign == NULL || equal_sign == input)
-	{
 		return (0);
-	}
 	var_length = equal_sign - input;
 	var = malloc(var_length + 1);
 	strncpy(var, input, var_length);
@@ -47,9 +62,13 @@ int	validate_format(const char *input)
 	while (var[i])
 	{
 		if (!ft_isalnum(var[i]))
+		{
+			free(var);
 			return (0);
+		}
 		i++;
 	}
+	free(var);
 	return (1);
 }
 
@@ -66,7 +85,6 @@ void	update_var_to_envp(char *var, char *new_value)
 			envp[index][strlen(var)] == '=')
 		{
 			free(envp[index]);
-			// printf("junta = {%s}\n", junta_strings(strdup(var), strdup("=")));
 			envp[index] = junta_strings(strdup(var), "=");
 			envp[index] = junta_strings(envp[index], new_value);
 			if (!envp[index])
@@ -95,6 +113,9 @@ int	exec_export(struct execcmd *ecmd)
 		{
 			write(2, " not a valid identifier\n", \
 			ft_strlen(" not a valid identifier\n"));
+			for (int i = 0; var[i]; i++)
+				free(var[i]);
+			free(var);
 			return (safe_exit(EXIT_FAILURE));
 		}
 		if (validate_format(ecmd->argv[i]))
@@ -106,6 +127,9 @@ int	exec_export(struct execcmd *ecmd)
 		}
 		i++;
 	}
+	for (int i = 0; var[i]; i++)
+				free(var[i]);
+			free(var);
 	return (safe_exit(EXIT_SUCCESS));
 }
 
