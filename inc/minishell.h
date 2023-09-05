@@ -169,6 +169,9 @@ int	is_builtin_tree(struct cmd *cmd);
 
 void	update_var_to_envp(char *var, char *new_value);
 void	process_token_conditions(int *old, int *i, int *state, int *space);
+char *replace_dollar(char *input, char **envp);
+void	add_token(t_list **list, const char *token_str, int state);
+
 
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:05:14 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/05 00:55:52 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/05 14:12:36 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,46 +39,6 @@ t_list	*create_space_token( int state)
 	return (aux);
 }
 
-char *replace_dollar(char *input, char **envp) {
-    size_t length = strlen(input);
-    char *result = malloc(length * 10 + 1); // Allocate sufficient space
-    result[0] = '\0'; // Ensure the result string starts empty
-    char *str_aux;
-    size_t index_result = 0;
-
-    for (size_t i = 0; i < length; i++) {
-        if (input[i] == '$') {
-            size_t start = i + 1;
-            size_t j = start;
-            while (ft_isalnum(input[j])) {
-                j++;
-            }
-            if (input[j] == '?') {
-                j++;
-            }
-            str_aux = malloc(j - start + 1);
-            strncpy(str_aux, input + start, j - start);
-            str_aux[j - start] = '\0';
-            char *export = NULL;
-            if (strcmp(str_aux, "?") == 0) {
-                export = ft_itoa(exit_status);
-            } else {
-                export = exp_dollar(str_aux, envp);
-            }
-
-            strcat(result + index_result, export);
-            index_result += strlen(export);
-            // free(str_aux); // Free the temporary string memory
-            i = j - 1; // Update the main index to reflect the change
-        } else {
-            result[index_result++] = input[i];
-        }
-    }
-	free(input);
-    result[index_result] = '\0';        
-    return result;
-}
-
 void	find_dollar(char	**envp)
 {
 	t_list	*aux;
@@ -106,7 +66,7 @@ void	add_token(t_list **list, const char *token_str, int state)
 
 	if (*list == NULL)
 		*list = new_node;
-	else 
+	else
 	{
 		current = *list;
 		while (current->next)

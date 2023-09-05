@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:05:19 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/05 00:56:33 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/05 15:26:19 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,10 +48,6 @@ size_t	string_number(char const *s, int c)
 	return (num);
 }
 
-//Allocates (with malloc(3)) and returns an array
-//of strings obtained by splitting ’s’ using the
-//character ’c’ as a delimiter. The array must be
-//ended by a NULL pointer.
 char	**ft_split(char const *s, char c)
 {
 	size_t	num;
@@ -115,7 +111,7 @@ void subdivide_tokens(void)
         }
         free_tokens(vars()->tokens);
         vars()->tokens = new_tokens;
-		
+
     }
     // print_tokens(vars()->tokens);
 }

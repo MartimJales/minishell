@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/21 00:14:27 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/05 02:19:06 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/05 14:49:42 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,65 +65,83 @@ struct cmd	*create_redircmd(t_list *lst, char *filename, int redir_signal)
 		cmd->fd = 0;
 	else if (redir_signal == OUT || redir_signal == APPEND)
 		cmd->fd = 1;
-	else 
+	else
 		cmd->fd = 2;
 	cmd->cmd = parseredir(lst);
 	return ((struct cmd *)cmd);
 }
 
+int	detect_redirection(t_list *current)
+{
+	if (current->content->state == DEF)
+		return (ft_redir_signal(current->content->s));
+	return (0);
+}
+
+// Free nodes when redirection is detected
+void	free_nodes(t_list *to_free1, t_list *to_free2)
+{
+	free(to_free1->content->s);
+	free(to_free1->content);
+	free(to_free1);
+
+	if (to_free2)
+	{
+		if (to_free2->content)
+			free(to_free2->content);
+		free(to_free2);
+	}
+}
+
+// Handle redirection logic: free nodes and create redirection command
+struct cmd *handle_redirection(t_list **old, t_list *current, t_list *prev, int redir_signal)
+{
+	t_list	*to_free1;
+	t_list	*to_free2;
+	char	*content_s;
+
+	to_free1 = current;
+	to_free2 = current->next;
+	content_s = NULL;
+	if (current->next && current->next->content)
+		content_s = current->next->content->s;
+
+	if (prev)
+		prev->next = current->next->next;
+	else
+		*old = current->next->next;
+	free_nodes(to_free1, to_free2);
+
+	return (create_redircmd(*old, content_s, redir_signal));
+}
+
 struct cmd *parseredir(t_list *lst)
 {
-	t_list *old = lst;
-	t_list *prev = NULL;
-	t_list *current = lst;
-	int redir_signal = 0;
+	t_list	*old;
+	t_list	*prev;
+	t_list	*current;
+	int		redir_signal;
 
+	old = lst;
+	prev = NULL;
+	current = lst;
+	redir_signal = 0;
 	if (!lst)
-		return NULL;
+		return (NULL);
 
 	while (current)
 	{
-		if (current->content->state == DEF)
-			redir_signal = ft_redir_signal(current->content->s);
-		
+		redir_signal = detect_redirection(current);
 		if (redir_signal != 0)
-		{
-			t_list *to_free1 = current;
-			t_list *to_free2 = current->next;
-
-			char *content_s = NULL;
-			if (current->next && current->next->content)
-				content_s = current->next->content->s;
-
-			if (prev)  // If there's a previous node
-			{
-				prev->next = current->next->next;
-			}
-			else  // If the matching node is the first node
-			{
-				old = current->next->next;
-			}
-
-			free(to_free1->content->s);
-			free(to_free1->content);
-			free(to_free1);
-			if (to_free2)
-			{
-				if (to_free2->content)
-					free(to_free2->content);
-				free(to_free2);
-			}
-
-			return create_redircmd(old, content_s, redir_signal);
-		}
-
+			return (handle_redirection(&old, current, prev, redir_signal));
 
 		prev = current;
 		current = current->next;
 	}
 
-	return parseexec(old);
+	return (parseexec(old));
 }
+
 
 
 
