@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/09/04 23:05:09 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/05 00:53:47 by mjales           ###   ########.fr       */
+/*   Created: 2023/05/24 13:00:05 by mjales            #+#    #+#             */
+/*   Updated: 2023/09/05 13:58:44 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,90 +14,80 @@
 
 extern int	exit_status;
 
-void	print_tokens(t_list *lst)
+void	process_quote_state(int *old, int i, int *state, int *space)
 {
-	t_list	*current;
-
-	current = lst;
-	printf("Tokens:\n");
-	while (current != NULL)
+	if (*state == 0)
 	{
-		printf("token(%d) = {%s}\n", current->content->state, \
-current->content->s);
-		current = current->next;
+		ft_lstadd_back(&vars()->tokens, create_token(*old, i, *state));
+		*old = i + 1;
+		*state = 1;
+	}
+	else if (*state == 1)
+	{
+		ft_lstadd_back(&vars()->tokens, create_token(*old, i, *state));
+		*old = i + 1;
+		*state = 0;
+	}
+	*space = 0;
+}
+
+void	process_double_quote_state(int *old, int i, int *state, int *space)
+{
+	if (*state == 0)
+	{
+		ft_lstadd_back(&vars()->tokens, create_token(*old, i, *state));
+		*old = i + 1;
+		*state = 2;
+	}
+	else if (*state == 2)
+	{
+		ft_lstadd_back(&vars()->tokens, create_token(*old, i, *state));
+		*old = i + 1;
+		*state = 0;
+	}
+	*space = 0;
+}
+
+void	process_space_state(int *old, int i, int *state, int *space)
+{
+	if (*state == 0)
+	{
+		ft_lstadd_back(&vars()->tokens, create_token(*old, i, *state));
+		*old = i;
+		*state = 0;
+		*space = 1;
 	}
 }
 
-int	is_redir(const char *str)
+void	process_new_space(int *state, int *space)
 {
-	if (strncmp(str, ">>", 2) == 0)
-		return (1);
-	if (strncmp(str, "<<", 2) == 0)
-		return (1);
-	if (strncmp(str, ">", 1) == 0)
-		return (1);
-	if (strncmp(str, "<", 1) == 0)
-		return (1);
-	return (0);
+	ft_lstadd_back(&vars()->tokens, create_space_token(*state));
+	*state = 0;
+	*space = 0;
 }
 
-size_t	ft_strlen(const char *str)
+void	process_token_conditions(int *old, int *i, int *state, int *space)
 {
-	size_t	i;
-
-	i = 0;
-	while (str[i])
-		i++;
-	return (i);
-}
-
-char	*exp_dollar(char *s, char **envp)
-{
-	char	*path;
-	int		i;
-
-	i = 0;
-	if (s == NULL)
-		return ("");
-	s = junta_strings(s, "=");
-	while (envp[i])
+	if (elems()->s[*i] == '\'')
+		process_quote_state(old, *i, state, space);
+	else if (elems()->s[*i] == '\"')
+		process_double_quote_state(old, *i, state, space);
+	else if (elems()->s[*i] == ' ' && *state == 0)
+		process_space_state(old, *i, state, space);
+	else if (is_redir(&vars()->s[*i]) && *state == 0)
 	{
-		path = ft_strnstr(envp[i], s, ft_strlen(s));
-		if (path)
-			break ;
-		i++;
+		process_space_state(old, *i, state, space);
+		(*i)++;
+		if (is_redir(&vars()->s[*i]) && *state == 0)
+			(*i)++;
+		process_space_state(old, *i, state, space);
+		process_new_space(state, space);
 	}
-	i = ft_strlen(s);
-	free(s);
-	if (!path)
-		return ("$");
-	return (path + i);
-}
-
-void	junta_tokens(t_list *lst)
-{
-	t_list	*cur;
-	t_list	*tmp;
-
-	cur = lst;
-	while (cur && cur->next)
+	else if (*space)
 	{
-		if (strcmp(cur->content->s, " ") != 0 && \
-strcmp(cur->next->content->s, " ") != 0)
-		{
-			cur->content->s = \
-junta_strings(cur->content->s, cur->next->content->s);
-			if (cur->next->content->state > cur->content->state)
-				cur->content->state = cur->next->content->state;
-			tmp = cur->next;
-			cur->next = tmp->next;
-			free(tmp->content->s);
-			free(tmp->content);
-			free(tmp);
-		}
-		else
-		{
-			cur = cur->next;
-		}
+		ft_lstadd_back(&vars()->tokens, create_token(*old, *i, *state));
+		*old = *i;
+		*state = 0;
+		*space = 0;
 	}
 }

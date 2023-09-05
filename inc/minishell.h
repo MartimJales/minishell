@@ -168,6 +168,7 @@ void debug_tree(struct cmd *root);
 int	is_builtin_tree(struct cmd *cmd);
 
 void	update_var_to_envp(char *var, char *new_value);
+void	process_token_conditions(int *old, int *i, int *state, int *space);
 
 
 #endif

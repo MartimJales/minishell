@@ -5,66 +5,12 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/24 13:00:05 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/05 09:36:29 by mjales           ###   ########.fr       */
+/*   Created: 2023/09/05 13:58:49 by mjales            #+#    #+#             */
+/*   Updated: 2023/09/05 13:59:12 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
-
-extern int	exit_status;
-
-void	process_quote_state(int *old, int i, int *state, int *space)
-{
-	if (*state == 0)
-	{
-		ft_lstadd_back(&vars()->tokens, create_token(*old, i, *state));
-		*old = i + 1;
-		*state = 1;
-	}
-	else if (*state == 1)
-	{
-		ft_lstadd_back(&vars()->tokens, create_token(*old, i, *state));
-		*old = i + 1;
-		*state = 0;
-	}
-	*space = 0;
-}
-
-void	process_double_quote_state(int *old, int i, int *state, int *space)
-{
-	if (*state == 0)
-	{
-		ft_lstadd_back(&vars()->tokens, create_token(*old, i, *state));
-		*old = i + 1;
-		*state = 2;
-	}
-	else if (*state == 2)
-	{
-		ft_lstadd_back(&vars()->tokens, create_token(*old, i, *state));
-		*old = i + 1;
-		*state = 0;
-	}
-	*space = 0;
-}
-
-void	process_space_state(int *old, int i, int *state, int *space)
-{
-	if (*state == 0)
-	{
-		ft_lstadd_back(&vars()->tokens, create_token(*old, i, *state));
-		*old = i;
-		*state = 0;
-		*space = 1;
-	}
-}
-
-void	process_new_space(int *state, int *space)
-{
-	ft_lstadd_back(&vars()->tokens, create_space_token(*state));
-	*state = 0;
-	*space = 0;
-}
 
 void	lexer(char **envp)
 {
@@ -79,28 +25,7 @@ void	lexer(char **envp)
 	space = 0;
 	while (elems()->s[++i])
 	{
-		if (elems()->s[i] == '\'')
-			process_quote_state(&old, i, &state, &space);
-		else if (elems()->s[i] == '\"')
-			process_double_quote_state(&old, i, &state, &space);
-		else if (elems()->s[i] == ' ' && state == 0)
-			process_space_state(&old, i, &state, &space);
-		else if (is_redir(&vars()->s[i]) && state == 0) 
-		{
-			process_space_state(&old, i, &state, &space);
-			i++;
-			if (is_redir(&vars()->s[i]) && state == 0)
-				i++;
-			process_space_state(&old, i, &state, &space);
-			process_new_space(&state, &space);
-		}
-		else if (space)
-		{
-			ft_lstadd_back(&vars()->tokens, create_token(old, i, state));
-			old = i;
-			state = 0;
-			space = 0;
-		}
+		process_token_conditions(&old, &i, &state, &space);
 	}
 	if (old != i)
 		ft_lstadd_back(&vars()->tokens, create_token(old, i, state));
@@ -108,5 +33,3 @@ void	lexer(char **envp)
 	junta_tokens(vars()->tokens);
 	subdivide_tokens();
 }
-
-

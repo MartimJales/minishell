@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:05:01 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/05 09:32:09 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/05 13:38:55 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,66 +14,71 @@
 
 extern int exit_status;
 
-void heredoc(const char *delimiter)
+void	init_pipe(void)
 {
-	char *inputBuffer = NULL;      // Buffer to store user input
-	char *multilineInput = NULL;  // Buffer to store multiline input
-
 	if (pipe(vars()->pipefd) == -1)
 	{
 		perror("Error creating pipe");
-		exit(EXIT_FAILURE); // Exit gracefully on error
+		exit(EXIT_FAILURE);
 	}
+}
 
+void	write_to_pipe_and_cleanup(char *mi)
+{
+	write(vars()->pipefd[1], mi, strlen(mi));
+	free(mi);
+}
+
+char	*append_to_multiline(char *mi, char *input_buffer)
+{
+	char	*temp;
+
+	if (mi)
+	{
+		temp = realloc(mi, strlen(mi) + strlen(input_buffer) + 2);
+		mi = temp;
+		mi = junta_strings(mi, input_buffer);
+		mi = junta_strings(mi, "\n");
+	}
+	else
+	{
+		mi = strdup(input_buffer);
+		if (mi == NULL)
+		{
+			perror("Error allocating memory");
+			free(input_buffer);
+			return (NULL);
+		}
+		mi = junta_strings(mi, "\n");
+	}
+	return (mi);
+}
+
+void	heredoc(const char *delimiter)
+{
+	char	*input_buffer;
+	char	*mi;
+
+	input_buffer = NULL;
+	mi = NULL;
+	init_pipe();
 	while (1)
 	{
-		inputBuffer = readline(">");
-		if (inputBuffer == NULL)
-			break;
-		printf("%s == %s\n", inputBuffer, delimiter);
-		if (strcmp(inputBuffer, delimiter) == 0)
+		input_buffer = readline(">");
+		if (!input_buffer)
+			break ;
+		if (strcmp(input_buffer, delimiter) == 0)
 		{
-			if (multilineInput)
-			{
-				write(vars()->pipefd[1], multilineInput, strlen(multilineInput));
-				free(multilineInput);
-				multilineInput = NULL;
-			}
-			free(inputBuffer);
-			break;
+			if (mi)
+				write_to_pipe_and_cleanup(mi);
+			free(input_buffer);
+			break ;
 		}
-
-		if (multilineInput)
-		{
-			char *temp = realloc(multilineInput, strlen(multilineInput) + strlen(inputBuffer) + 2);
-			if (temp == NULL)
-			{
-				perror("Error reallocating memory");
-				free(inputBuffer);
-				break;
-			}
-			multilineInput = temp;
-			multilineInput = junta_strings(multilineInput, inputBuffer);
-			multilineInput = junta_strings(multilineInput, "\n");
-			// strcat(multilineInput, inputBuffer);
-			// strcat(multilineInput, "\n");
-		}
-		else
-		{
-			multilineInput = strdup(inputBuffer);
-			if (multilineInput == NULL)
-			{
-				perror("Error allocating memory");
-				free(inputBuffer);
-				break;
-			}
-			multilineInput = junta_strings(multilineInput, "\n");// strcat(multilineInput, "\n");
-		}
-		add_history(inputBuffer);
-		free(inputBuffer);
+		mi = append_to_multiline(mi, input_buffer);
+		add_history(input_buffer);
+		free(input_buffer);
 	}
-
-	close(vars()->pipefd[1]); // Close the write end of the pipe when done
+	close(vars()->pipefd[1]);
 	dup2(vars()->pipefd[0], STDIN_FILENO);
-	close(vars()->pipefd[0]); // Close the read end of the pipe when done
+	close(vars()->pipefd[0]);
 }

@@ -36,6 +36,7 @@ SRCS        :=      src/aux.c \
 						  src/lexer4.c \
 						  src/tree.c \
 						  src/env.c \
+						  src/junta_tokens.c \
 
 OBJS        := $(SRCS:.c=.o)
 
