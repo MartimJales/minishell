@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:05:51 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:11:44 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/06 02:36:57 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ char	**list_to_array(t_list *lst)
 {
 	int		count;
 	t_list	*tmp;
-	char	**arr; 
+	char	**arr;
 	int		i;
 
 	count = 0;
@@ -41,7 +41,7 @@ char	**list_to_array(t_list *lst)
 	return (arr);
 }
 
-struct cmd	*handle_redirection(t_list **old, \
+struct s_cmd	*handle_redirection(t_list **old, \
 t_list *current, t_list *prev, int redir_signal)
 {
 	t_list	*to_free1;
@@ -61,7 +61,7 @@ t_list *current, t_list *prev, int redir_signal)
 	return (create_redircmd(*old, content_s, redir_signal));
 }
 
-struct cmd	*parseredir(t_list *lst)
+struct s_cmd	*parseredir(t_list *lst)
 {
 	t_list	*old;
 	t_list	*prev;
@@ -85,14 +85,14 @@ struct cmd	*parseredir(t_list *lst)
 	return (parseexec(old));
 }
 
-struct cmd	*parseexec(t_list *lst)
+struct s_cmd	*parseexec(t_list *lst)
 {
-	struct execcmd	*cmd;
+	struct s_execcmd	*cmd;
 
 	cmd = malloc(sizeof(*cmd));
 	memset(cmd, 0, sizeof(*cmd));
 	cmd->type = EXEC;
 	cmd->argv = check_path(lst, vars()->path_arg);
 	free_tokens(lst);
-	return ((struct cmd *)cmd);
+	return ((struct s_cmd *)cmd);
 }

@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/06 01:47:10 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:22:55 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/06 02:38:05 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ void	free_vars(t_vars *vars)
 	free(vars);
 }
 
-void	free_execcmd(struct execcmd *ecmd)
+void	free_execcmd(struct s_execcmd *ecmd)
 {
 	int	i;
 
@@ -53,7 +53,7 @@ void	free_execcmd(struct execcmd *ecmd)
 	free(ecmd);
 }
 
-void	free_redircmd(struct redircmd *rcmd)
+void	free_redircmd(struct s_redircmd *rcmd)
 {
 	if (!rcmd)
 		return ;
@@ -62,7 +62,7 @@ void	free_redircmd(struct redircmd *rcmd)
 	free(rcmd);
 }
 
-void	free_pipecmd(struct pipecmd *pcmd)
+void	free_pipecmd(struct s_pipecmd *pcmd)
 {
 	if (!pcmd)
 		return ;

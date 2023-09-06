@@ -6,44 +6,44 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/06 01:43:36 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:32:17 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/06 02:41:09 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
-int	is_builtin_tree(struct cmd *cmd)
+int	is_builtin_tree(struct s_cmd *cmd)
 {
 	if (!cmd)
 		return (0);
 	if (cmd->type == EXEC)
 		return (builtin_exec(cmd));
 	else if (cmd->type == REDIR)
-		return (is_builtin_tree(((struct redircmd *)cmd)->cmd));
+		return (is_builtin_tree(((struct s_redircmd *)cmd)->cmd));
 	else if (cmd->type == PIPE)
 		return (builtin_pipe(cmd));
 	return (0);
 }
 
-void	free_cmd(struct cmd *command)
+void	free_cmd(struct s_cmd *command)
 {
 	if (!command)
 		return ;
 	if (command->type == EXEC)
 	{
-		free_execcmd((struct execcmd *)command);
+		free_execcmd((struct s_execcmd *)command);
 	}
 	else if (command->type == REDIR)
 	{
-		free_redircmd((struct redircmd *)command);
+		free_redircmd((struct s_redircmd *)command);
 	}
 	else if (command->type == PIPE)
 	{
-		free_pipecmd((struct pipecmd *)command);
+		free_pipecmd((struct s_pipecmd *)command);
 	}
 }
 
-void	process_and_execute(struct cmd *tree)
+void	process_and_execute(struct s_cmd *tree)
 {
 	int	cpid;
 	int	status;
@@ -70,8 +70,8 @@ void	process_and_execute(struct cmd *tree)
 
 void	process_input(void)
 {
-	int			i;
-	struct cmd	*tree;
+	int				i;
+	struct s_cmd	*tree;
 
 	while (1)
 	{

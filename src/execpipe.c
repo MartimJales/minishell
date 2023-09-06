@@ -6,17 +6,17 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:04:38 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:18:18 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/06 02:38:05 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
-void	child_pipe(int pipefd[2], struct pipecmd *pcmd)
+void	child_pipe(int pipefd[2], struct s_pipecmd *pcmd)
 {
-	struct redircmd	*rcmd;
+	struct s_redircmd	*rcmd;
 
-	rcmd = (struct redircmd *)pcmd->left;
+	rcmd = (struct s_redircmd *)pcmd->left;
 	if (rcmd->mode != HEREDOC)
 	{
 		close(pipefd[0]);
@@ -26,7 +26,7 @@ void	child_pipe(int pipefd[2], struct pipecmd *pcmd)
 	exec_tree(pcmd->left);
 }
 
-void	exec_pipe_command(struct pipecmd *pcmd)
+void	exec_pipe_command(struct s_pipecmd *pcmd)
 {
 	int		pipefd[2];
 	pid_t	cpid;
@@ -54,7 +54,7 @@ void	exec_pipe_command(struct pipecmd *pcmd)
 	}
 }
 
-void	exec_pipe(struct pipecmd *pcmd)
+void	exec_pipe(struct s_pipecmd *pcmd)
 {
 	if (!pcmd->right)
 		exec_tree(pcmd->left);
@@ -62,11 +62,11 @@ void	exec_pipe(struct pipecmd *pcmd)
 		exec_pipe_command(pcmd);
 }
 
-int	builtin_pipe(struct cmd *cmd)
+int	builtin_pipe(struct s_cmd *cmd)
 {
-	struct pipecmd	*pcmd;
+	struct s_pipecmd	*pcmd;
 
-	pcmd = (struct pipecmd *)cmd;
+	pcmd = (struct s_pipecmd *)cmd;
 	if (pcmd->right)
 		return (0);
 	return (is_builtin_tree(pcmd->left));

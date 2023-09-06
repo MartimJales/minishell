@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:07:00 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:23:49 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/06 02:40:21 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ void	delete_var_from_envp(char *var)
 	envp = vars()->envp;
 	while (envp[index] != NULL)
 	{
-		if (strncmp(envp[index], var, strlen(var)) == 0 && 
-			envp[index][strlen(var)] == '=')
+		if (strncmp(envp[index], var, strlen(var)) == 0 && \
+		envp[index][strlen(var)] == '=')
 		{
 			free(envp[index]);
 			i = index;
@@ -53,7 +53,7 @@ envp[i][strlen(var)] == '=')
 	return (0);
 }
 
-int	exec_unset(struct execcmd *ecmd)
+int	exec_unset(struct s_execcmd *ecmd)
 {
 	int	i;
 

@@ -6,15 +6,15 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/21 00:14:27 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:22:00 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/06 02:38:05 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
-struct pipecmd	*setup_pipe(t_list *current, t_list *lst)
+struct s_pipecmd	*setup_pipe(t_list *current, t_list *lst)
 {
-	struct pipecmd	*pipe;
+	struct s_pipecmd	*pipe;
 
 	pipe = malloc(sizeof(*pipe));
 	pipe->type = PIPE;
@@ -32,7 +32,7 @@ struct pipecmd	*setup_pipe(t_list *current, t_list *lst)
 	return (pipe);
 }
 
-struct cmd	*parsepipe(t_list *lst)
+struct s_cmd	*parsepipe(t_list *lst)
 {
 	t_list			*begin;
 
@@ -41,12 +41,12 @@ struct cmd	*parsepipe(t_list *lst)
 		return (NULL);
 	while (lst->next && *(lst->next->content->s) != '|')
 		lst = lst->next;
-	return ((struct cmd *)setup_pipe(begin, lst));
+	return ((struct s_cmd *)setup_pipe(begin, lst));
 }
 
-struct cmd	*create_redircmd(t_list *lst, char *filename, int redir_signal)
+struct s_cmd	*create_redircmd(t_list *lst, char *filename, int redir_signal)
 {
-	struct redircmd	*cmd;
+	struct s_redircmd	*cmd;
 
 	cmd = malloc(sizeof(*cmd));
 	memset(cmd, 0, sizeof(*cmd));
@@ -60,7 +60,7 @@ struct cmd	*create_redircmd(t_list *lst, char *filename, int redir_signal)
 	else
 		cmd->fd = 2;
 	cmd->cmd = parseredir(lst);
-	return ((struct cmd *)cmd);
+	return ((struct s_cmd *)cmd);
 }
 
 int	detect_redirection(t_list *current)

@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:06:47 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:23:25 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/06 02:37:25 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int	redir_mode(int redir_signal)
 	return (0);
 }
 
-void	exec_redir(struct redircmd *rcmd)
+void	exec_redir(struct s_redircmd *rcmd)
 {
 	if (rcmd->mode == HEREDOC)
 		heredoc(rcmd->file);

@@ -69,27 +69,27 @@ typedef struct s_vars
 	t_list	*prev;
 }	t_vars;
 
-struct	cmd {
+struct	s_cmd {
 	int	type;
 };
 
-struct execcmd {
+struct s_execcmd {
 	int		type;
 	char	**argv;
 };
 
-struct	redircmd {
-	int			type;
-	struct cmd	*cmd;
-	char		*file;
-	int			mode;
-	int			fd;
+struct	s_redircmd {
+	int				type;
+	struct s_cmd	*cmd;
+	char			*file;
+	int				mode;
+	int				fd;
 };
 
-struct pipecmd {
-	int			type;
-	struct cmd	*left;
-	struct cmd	*right;
+struct s_pipecmd {
+	int				type;
+	struct s_cmd	*left;
+	struct s_cmd	*right;
 };
 
 //Lexer functions
@@ -117,11 +117,11 @@ void			signal_cmd(int sig);
 void			print_tokens(t_list *current);
 char			*ft_itoa(int nbr);
 int				is_builtin(char *cmd);
-void			process_and_execute(struct cmd *tree);
+void			process_and_execute(struct s_cmd *tree);
 long long int	ft_atoi(char *str);
 int				check_alnum(const char *input_string);
 int				check_num(const char *input_string);
-int				builtin_pipe(struct cmd *cmd);
+int				builtin_pipe(struct s_cmd *cmd);
 void			setup_signals(void);
 void			cleanup(void);
 void			panic(char *error, int status);
@@ -133,12 +133,12 @@ t_list			*create_space_token( int state);
 int				is_redir(const char *str);
 void			subdivide_tokens(void);
 void			junta_tokens(t_list *lst);
-int				exec_export(struct execcmd *ecmd);
-int				exec_unset(struct execcmd *ecmd);
-int				exec_cd(struct execcmd *ecmd);
-int				exec_exit(struct execcmd *ecmd);
-void			exec_pipe(struct pipecmd *pcmd);
-void			exec_redir(struct redircmd *rcmd);
+int				exec_export(struct s_execcmd *ecmd);
+int				exec_unset(struct s_execcmd *ecmd);
+int				exec_cd(struct s_execcmd *ecmd);
+int				exec_exit(struct s_execcmd *ecmd);
+void			exec_pipe(struct s_pipecmd *pcmd);
+void			exec_redir(struct s_redircmd *rcmd);
 char			*exp_dollar(char *s, char **envp);
 int				is_special(const char *str, char **special);
 void			add_token(t_list **list, const char *token_str, int state);
@@ -149,9 +149,9 @@ int				ft_redir_signal(char *s);
 char			**list_to_array(t_list *lst);
 
 //EXEC functions
-void			exec_tree(struct cmd *root);
+void			exec_tree(struct s_cmd *root);
 int				exec_env(int declare);
-int				builtin_exec(struct cmd *cmd);
+int				builtin_exec(struct s_cmd *cmd);
 
 //Linked Lists functions
 void			ft_lstadd_back(t_list **lst, t_list *new);
@@ -159,12 +159,12 @@ t_list			*ft_lstnew(void *content);
 t_list			*ft_lstlast(t_list *lst);
 
 //Tree functions
-struct cmd		*parsepipe(t_list *lst);
-struct cmd		*parseredir(t_list *lst);
-struct cmd		*parseexec(t_list *lst);
-void			debug_tree(struct cmd *root);
+struct s_cmd	*parsepipe(t_list *lst);
+struct s_cmd	*parseredir(t_list *lst);
+struct s_cmd	*parseexec(t_list *lst);
+void			debug_tree(struct s_cmd *root);
 
-int				is_builtin_tree(struct cmd *cmd);
+int				is_builtin_tree(struct s_cmd *cmd);
 
 void			update_var_to_envp(char *var, char *new_value);
 void			token_conditions(int *old, int *i, int *state, int *space);
@@ -174,13 +174,13 @@ char			**duplicate_envp(char **envp);
 void			process_input(void);
 t_list			*subdivide_current_token(t_list *current, int j);
 void			free_nodes(t_list *to_free1, t_list *to_free2);
-struct cmd		*create_redircmd(t_list *lst, char *filename, int redir_signal);
+struct s_cmd	*create_redircmd(t_list *lst, char *filename, int redir_signal);
 int				detect_redirection(t_list *current);
 
-void			free_execcmd(struct execcmd *ecmd);
-void			free_redircmd(struct redircmd *rcmd);
-void			free_pipecmd(struct pipecmd *pcmd);
+void			free_execcmd(struct s_execcmd *ecmd);
+void			free_redircmd(struct s_redircmd *rcmd);
+void			free_pipecmd(struct s_pipecmd *pcmd);
 void			free_list(t_list *lst);
-void			free_cmd(struct cmd *command);
+void			free_cmd(struct s_cmd *command);
 
 #endif

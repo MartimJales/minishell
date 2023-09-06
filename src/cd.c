@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:04:28 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:18:18 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/06 02:36:57 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ char	*expand_var(char **envp, char *var)
 	return (NULL);
 }
 
-char	*parse_cd_args(struct execcmd *ecmd)
+char	*parse_cd_args(struct s_execcmd *ecmd)
 {
 	if (ecmd->argv[2])
 	{
@@ -43,7 +43,7 @@ char	*parse_cd_args(struct execcmd *ecmd)
 	return (ecmd->argv[1]);
 }
 
-int	exec_cd(struct execcmd *ecmd)
+int	exec_cd(struct s_execcmd *ecmd)
 {
 	char	old_path[1024];
 	char	new_path[1024];

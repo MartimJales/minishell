@@ -6,18 +6,18 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 00:16:50 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:23:38 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/06 02:40:48 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
-int	builtin_exec(struct cmd *cmd)
+int	builtin_exec(struct s_cmd *cmd)
 {
-	struct execcmd	*ecmd;
-	char			*command;
+	struct s_execcmd	*ecmd;
+	char				*command;
 
-	ecmd = (struct execcmd *)cmd;
+	ecmd = (struct s_execcmd *)cmd;
 	command = ecmd->argv[0];
 	if (command)
 	{
@@ -29,7 +29,7 @@ int	builtin_exec(struct cmd *cmd)
 	return (-1);
 }
 
-int	exec_builtin(struct execcmd *ecmd)
+int	exec_builtin(struct s_execcmd *ecmd)
 {
 	if (strcmp("export", ecmd->argv[0]) == 0)
 		return (exec_export(ecmd));
@@ -44,7 +44,7 @@ int	exec_builtin(struct execcmd *ecmd)
 	return (-1);
 }
 
-void	exec_single_command(struct execcmd *ecmd)
+void	exec_single_command(struct s_execcmd *ecmd)
 {
 	if (!ecmd->argv[0])
 		exit(1);
@@ -57,16 +57,16 @@ void	exec_single_command(struct execcmd *ecmd)
 	}
 }
 
-void	exec_tree(struct cmd *root)
+void	exec_tree(struct s_cmd *root)
 {
 	if (!root)
 		return ;
 	if (root->type == EXEC)
-		exec_single_command((struct execcmd *)root);
+		exec_single_command((struct s_execcmd *)root);
 	else if (root->type == REDIR)
-		exec_redir((struct redircmd *)root);
+		exec_redir((struct s_redircmd *)root);
 	else if (root->type == PIPE)
-		exec_pipe((struct pipecmd *)root);
+		exec_pipe((struct s_pipecmd *)root);
 	else
 		fprintf(stderr, "Unknown cmd type: %d\n", root->type);
 }

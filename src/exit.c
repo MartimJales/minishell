@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:04:45 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:22:29 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/06 02:36:57 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ void	free_envp(char **envp)
 	free(envp);
 }
 
-int	exec_exit(struct execcmd *ecmd)
+int	exec_exit(struct s_execcmd *ecmd)
 {
 	if (ecmd->argv[1] && ecmd->argv[2])
 	{
