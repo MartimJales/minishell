@@ -6,13 +6,11 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:04:53 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/05 09:29:31 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/06 02:13:42 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
-
-extern int exit_status;
 
 void	add_variable_to_envp(char *new_var)
 {
@@ -42,7 +40,6 @@ void	add_variable_to_envp(char *new_var)
 	free(vars()->envp);
 	vars()->envp = new_envp;
 }
-
 
 int	validate_format(const char *input)
 {
@@ -81,7 +78,7 @@ void	update_var_to_envp(char *var, char *new_value)
 	envp = vars()->envp;
 	while (envp[index] != NULL)
 	{
-		if (strncmp(envp[index], var, strlen(var)) == 0 &&
+		if (strncmp(envp[index], var, strlen(var)) == 0 && 
 			envp[index][strlen(var)] == '=')
 		{
 			free(envp[index]);
@@ -111,7 +108,6 @@ int	clean_var(char **var, int status)
 	free(var);
 	return (safe_exit(status));
 }
-
 
 int	exec_export(struct execcmd *ecmd)
 {

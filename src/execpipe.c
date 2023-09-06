@@ -6,13 +6,11 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:04:38 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/04 23:59:45 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/06 02:18:18 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
-
-extern int exit_status;
 
 void	child_pipe(int pipefd[2], struct pipecmd *pcmd)
 {
@@ -28,7 +26,6 @@ void	child_pipe(int pipefd[2], struct pipecmd *pcmd)
 	exec_tree(pcmd->left);
 }
 
-// Auxiliary function for executing a pipe command
 void	exec_pipe_command(struct pipecmd *pcmd)
 {
 	int		pipefd[2];
@@ -46,10 +43,10 @@ void	exec_pipe_command(struct pipecmd *pcmd)
 	{
 		waitpid(cpid, &status, 0);
 		if (WIFEXITED(status))
-			exit_status = WEXITSTATUS(status);
+			g_exit_status = WEXITSTATUS(status);
 		else
 			printf("Child process did not exit normally\n");
-		exit_status = exit_status % 256;
+		g_exit_status = g_exit_status % 256;
 		close(pipefd[1]);
 		dup2(pipefd[0], STDIN_FILENO);
 		close(pipefd[0]);
@@ -61,7 +58,7 @@ void	exec_pipe(struct pipecmd *pcmd)
 {
 	if (!pcmd->right)
 		exec_tree(pcmd->left);
-	else 
+	else
 		exec_pipe_command(pcmd);
 }
 

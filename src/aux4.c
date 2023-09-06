@@ -6,23 +6,19 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:04:17 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/04 23:41:26 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/06 02:20:23 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
-
-extern int exit_status;
 
 static int	ft_nbrlen(int nbr)
 {
 	int	len;
 
 	len = 0;
-
 	if (nbr <= 0)
 		len = 1;
-
 	while (nbr)
 	{
 		nbr /= 10;
@@ -58,8 +54,6 @@ char	*ft_itoa(int nbr)
 	}
 	return (result);
 }
-
-
 
 long long int	ft_atoi(char *str)
 {
@@ -109,51 +103,7 @@ int	check_num(const char *input_string)
 		if (((input_string[i] == '+') || (input_string[i] == '-')) && i == 0)
 			continue ;
 		if (!(input_string[i] >= '0' && input_string[i] <= '9'))
-		{
 			return (0);
-		}
 	}
 	return (1);
 }
-
-// void	debug_tree(struct cmd *tree)
-// {
-// 	if (!tree) return ;
-
-// 	switch (tree->type) {
-// 		case EXEC:
-// 			{
-// 				struct execcmd *e = (struct execcmd *)tree;
-// 				printf("EXEC cmd:\n");
-// 				for (int i = 0; e->argv && e->argv[i]; i++) {
-// 					printf("  argv[%d] = %s\n", i, e->argv[i]);
-// 				}
-// 			}
-// 			break;
-// 		case REDIR:
-// 			{
-// 				struct redircmd *r = (struct redircmd *)tree;
-// 				printf("REDIR cmd:\n");
-// 				printf("  file: %s\n", r->file);
-// 				printf("  mode: %d\n", r->mode);
-// 				// Uncomment the line below if you add the fd field later
-// 				// printf("  fd: %d\n", r->fd);
-// 				printf("  -> Nested cmd:\n");
-// 				//debug_tree(r->cmd);
-// 			}
-// 			break;
-// 		case PIPE:
-// 			{
-// 				struct pipecmd *p = (struct pipecmd *)tree;
-// 				printf("PIPE cmd:\n");
-// 				printf("  -> Left cmd:\n");
-// 				debug_tree(p->left);
-// 				printf("  -> Right cmd:\n");
-// 				debug_tree(p->right);
-// 			}
-// 			break;
-// 		default:
-// 			printf("Unknown cmd type: %d\n", tree->type);
-// 			break;
-// 	}
-// }

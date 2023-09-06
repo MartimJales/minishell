@@ -6,13 +6,11 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:05:19 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/05 15:26:19 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/06 02:10:12 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
-
-extern int	exit_status;
 
 size_t	next_pos(char const *s, int c)
 {
@@ -73,62 +71,45 @@ char	**ft_split(char const *s, char c)
 	return (arr);
 }
 
-void subdivide_tokens(void)
+t_list	*handle_token_subdivision(char *content, int j, int state)
 {
-    t_list *new_tokens;
-    t_list *current = vars()->tokens;
-    for (int j = 0; j < 14; j++)
-    {
-        new_tokens = NULL;
-        current = vars()->tokens;
-        while (current != NULL) {
-            int state = current->content->state;
+	t_list	*new_tokens;
+	char	**subtokens;
+	size_t	i;
+	char	*part;
 
-            // Subdividir por espaços em branco se o estado for DEF
-            if (state == DEF && !is_special(current->content->s, vars()->sc)) {
-                char **subtokens = ft_split(current->content->s, ' ');
-                for (size_t i = 0; subtokens[i] != NULL; i++) {
-                    char *part = subtokens[i];
-                    if (strstr(part, vars()->sc[j])) {
-                        add_token(&new_tokens, strndup(part, strstr(part, vars()->sc[j]) - part), state);
-                        add_token(&new_tokens, vars()->sc[j], state);
-                        add_token(&new_tokens, strstr(part, vars()->sc[j]) + ft_strlen(vars()->sc[j]), state);
-                    } else {
-						// printf("part = {%s}\n",part);
-                        add_token(&new_tokens, part, state);
-                    }
-                    free(part);
-                }
-                free(subtokens);
-            }
-            else {
-				// printf("LEAK\n");
-				// print_tokens(new_tokens);
-                add_token(&new_tokens, current->content->s, state);
-				// print_tokens(new_tokens);
-            }
-            current = current->next;
-        }
-        free_tokens(vars()->tokens);
-        vars()->tokens = new_tokens;
-
-    }
-    // print_tokens(vars()->tokens);
+	i = -1;
+	subtokens = ft_split(content, ' ');
+	new_tokens = NULL;
+	while (subtokens[++i] != NULL)
+	{
+		part = subtokens[i];
+		if (strstr(part, vars()->sc[j]))
+		{
+			add_token(&new_tokens, \
+strndup(part, strstr(part, vars()->sc[j]) - part), state);
+			add_token(&new_tokens, vars()->sc[j], state);
+			add_token(&new_tokens, \
+strstr(part, vars()->sc[j]) + ft_strlen(vars()->sc[j]), state);
+		}
+		else
+			add_token(&new_tokens, part, state);
+		free(part);
+	}
+	free(subtokens);
+	return (new_tokens);
 }
 
-void	free_tokens(t_list *lst)
+t_list	*subdivide_current_token(t_list *current, int j)
 {
-	t_list	*current;
-	t_list	*next;
+	t_list	*new_tokens;
+	int		state;
 
-	current = lst;
-	while (current != NULL)
-	{
-		next = current->next;
-		free(current->content->s);
-		free(current->content);
-		free(current);
-		current = next;
-	}
-	vars()->tokens = NULL;
+	new_tokens = NULL;
+	state = current->content->state;
+	if (state == DEF && !is_special(current->content->s, vars()->sc))
+		new_tokens = handle_token_subdivision(current->content->s, j, state);
+	else
+		add_token(&new_tokens, current->content->s, state);
+	return (new_tokens);
 }

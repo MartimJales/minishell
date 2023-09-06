@@ -19,6 +19,7 @@ SRCS        :=      src/aux.c \
 						  src/aux3.c \
 						  src/aux4.c \
 						  src/aux5.c \
+						  src/aux6.c \
                           src/main.c \
 						  src/cd.c \
 						  src/exit.c \
@@ -38,6 +39,8 @@ SRCS        :=      src/aux.c \
 						  src/env.c \
 						  src/junta_tokens.c \
 						  src/dollar.c \
+						  src/free.c \
+
 						  
 
 OBJS        := $(SRCS:.c=.o)

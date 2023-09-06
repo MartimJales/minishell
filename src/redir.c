@@ -6,13 +6,11 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:06:47 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/04 23:06:48 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/06 02:23:25 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
-
-extern int exit_status;
 
 int	ft_redir_signal(char *s)
 {
@@ -24,7 +22,7 @@ int	ft_redir_signal(char *s)
 		return (OUT);
 	if (*s == '<')
 		return (IN);
-	return (0); 
+	return (0);
 }
 
 int	redir_mode(int redir_signal)
@@ -42,14 +40,13 @@ int	redir_mode(int redir_signal)
 
 void	exec_redir(struct redircmd *rcmd)
 {
-
-	if (rcmd->mode == HEREDOC) 
+	if (rcmd->mode == HEREDOC)
 		heredoc(rcmd->file);
 	else
 	{
 		close(rcmd->fd);
 		if (open(rcmd->file, rcmd->mode, 0664) < 0)
-			exit_status = EXIT_FAILURE;
+			g_exit_status = EXIT_FAILURE;
 	}
 	exec_tree(rcmd->cmd);
 }

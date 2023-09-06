@@ -6,13 +6,13 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:04:11 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/04 23:07:48 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/06 02:16:41 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
-extern int exit_status;
+//
 
 char	*junta_strings(char *s1, char *s2)
 {

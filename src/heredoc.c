@@ -6,13 +6,11 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:05:01 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/05 13:38:55 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/06 02:19:08 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
-
-extern int exit_status;
 
 void	init_pipe(void)
 {

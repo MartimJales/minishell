@@ -6,13 +6,11 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:05:14 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/05 14:12:36 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/06 02:20:39 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
-
-extern int	exit_status;
 
 t_list	*create_token(int start, int end, int state)
 {
@@ -39,7 +37,7 @@ t_list	*create_space_token( int state)
 	return (aux);
 }
 
-void	find_dollar(char	**envp)
+void	find_dollar(void)
 {
 	t_list	*aux;
 
@@ -47,7 +45,7 @@ void	find_dollar(char	**envp)
 	while (aux != NULL)
 	{
 		if (aux->content->state != SQ)
-			aux->content->s = replace_dollar(aux->content->s, envp);
+			aux->content->s = replace_dollar(aux->content->s);
 		aux = aux->next;
 	}
 }
@@ -63,7 +61,6 @@ void	add_token(t_list **list, const char *token_str, int state)
 	content->s = strdup(token_str);
 	content->state = state;
 	new_node->content = content;
-
 	if (*list == NULL)
 		*list = new_node;
 	else

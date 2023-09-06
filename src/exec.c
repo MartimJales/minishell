@@ -6,13 +6,11 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 00:16:50 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/04 23:59:24 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/06 02:23:38 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
-
-extern	int	exit_status;
 
 int	builtin_exec(struct cmd *cmd)
 {
@@ -21,7 +19,7 @@ int	builtin_exec(struct cmd *cmd)
 
 	ecmd = (struct execcmd *)cmd;
 	command = ecmd->argv[0];
-	if (command) 
+	if (command)
 	{
 		if (is_builtin(command))
 			return (1);
@@ -53,7 +51,7 @@ void	exec_single_command(struct execcmd *ecmd)
 	if (exec_builtin(ecmd) == -1)
 	{
 		execve(ecmd->argv[0], ecmd->argv, vars()->envp);
-		exit_status = 127;
+		g_exit_status = 127;
 		fprintf(stderr, "%s: command not found\n", ecmd->argv[0]);
 		exit(127);
 	}
@@ -63,13 +61,12 @@ void	exec_tree(struct cmd *root)
 {
 	if (!root)
 		return ;
-
 	if (root->type == EXEC)
 		exec_single_command((struct execcmd *)root);
 	else if (root->type == REDIR)
 		exec_redir((struct redircmd *)root);
 	else if (root->type == PIPE)
 		exec_pipe((struct pipecmd *)root);
-	else 
+	else
 		fprintf(stderr, "Unknown cmd type: %d\n", root->type);
 }

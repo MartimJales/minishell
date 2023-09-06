@@ -6,13 +6,11 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 12:28:03 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/01 12:35:30 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/06 02:16:37 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
-
-extern int exit_status;
 
 void	create_sc(void)
 {

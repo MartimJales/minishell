@@ -6,13 +6,11 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:07:00 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/05 01:57:25 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/06 02:23:49 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
-
-extern int exit_status;
 
 void	delete_var_from_envp(char *var)
 {
@@ -24,7 +22,7 @@ void	delete_var_from_envp(char *var)
 	envp = vars()->envp;
 	while (envp[index] != NULL)
 	{
-		if (strncmp(envp[index], var, strlen(var)) == 0 &&
+		if (strncmp(envp[index], var, strlen(var)) == 0 && 
 			envp[index][strlen(var)] == '=')
 		{
 			free(envp[index]);
@@ -68,7 +66,7 @@ int	exec_unset(struct execcmd *ecmd)
 		}
 		i++;
 	}
-	exit_status = 0;
+	g_exit_status = 0;
 	if (vars()->forked)
 	{
 		exit(0);

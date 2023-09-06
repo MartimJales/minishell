@@ -6,13 +6,11 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:04:28 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/04 23:59:04 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/06 02:18:18 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
-
-extern int exit_status;
 
 char	*expand_var(char **envp, char *var)
 {
@@ -34,7 +32,7 @@ char	*parse_cd_args(struct execcmd *ecmd)
 {
 	if (ecmd->argv[2])
 	{
-		exit_status = 1;
+		g_exit_status = 1;
 		fprintf(stderr, "cd: too many arguments\n");
 		return (NULL);
 	}
@@ -42,7 +40,6 @@ char	*parse_cd_args(struct execcmd *ecmd)
 		return (strdup(expand_var(vars()->envp, "HOME")));
 	else if (*ecmd->argv[1] == '-')
 		return (strdup(expand_var(vars()->envp, "OLDPWD")));
-
 	return (ecmd->argv[1]);
 }
 
@@ -53,16 +50,16 @@ int	exec_cd(struct execcmd *ecmd)
 	char	*path;
 
 	path = parse_cd_args(ecmd);
-	if (!path) 
+	if (!path)
 		return (1);
-	if (getcwd(old_path, sizeof(old_path)) == NULL) 
+	if (getcwd(old_path, sizeof(old_path)) == NULL)
 	{
 		perror("getcwd");
 		return (1);
 	}
 	if (chdir(path) != 0)
 	{
-		exit_status = 1;
+		g_exit_status = 1;
 		perror("cd");
 	}
 	if (getcwd(new_path, sizeof(new_path)) == NULL)

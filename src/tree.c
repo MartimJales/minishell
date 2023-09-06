@@ -6,19 +6,18 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/21 00:14:27 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/05 14:49:42 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/06 02:22:00 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
-struct pipecmd *setup_pipe(t_list *current, t_list *lst)
+struct pipecmd	*setup_pipe(t_list *current, t_list *lst)
 {
 	struct pipecmd	*pipe;
 
 	pipe = malloc(sizeof(*pipe));
 	pipe->type = PIPE;
-
 	if (lst->next)
 	{
 		pipe->right = parsepipe(lst->next->next);
@@ -28,10 +27,7 @@ struct pipecmd *setup_pipe(t_list *current, t_list *lst)
 		lst->next = NULL;
 	}
 	else
-	{
 		pipe->right = NULL;
-	}
-
 	pipe->left = parseredir(current);
 	return (pipe);
 }
@@ -41,16 +37,12 @@ struct cmd	*parsepipe(t_list *lst)
 	t_list			*begin;
 
 	begin = lst;
-
 	if (!lst)
 		return (NULL);
-
 	while (lst->next && *(lst->next->content->s) != '|')
 		lst = lst->next;
-
 	return ((struct cmd *)setup_pipe(begin, lst));
 }
-
 
 struct cmd	*create_redircmd(t_list *lst, char *filename, int redir_signal)
 {
@@ -78,81 +70,15 @@ int	detect_redirection(t_list *current)
 	return (0);
 }
 
-// Free nodes when redirection is detected
 void	free_nodes(t_list *to_free1, t_list *to_free2)
 {
 	free(to_free1->content->s);
 	free(to_free1->content);
 	free(to_free1);
-
 	if (to_free2)
 	{
 		if (to_free2->content)
 			free(to_free2->content);
 		free(to_free2);
 	}
-}
-
-// Handle redirection logic: free nodes and create redirection command
-struct cmd *handle_redirection(t_list **old, t_list *current, t_list *prev, int redir_signal)
-{
-	t_list	*to_free1;
-	t_list	*to_free2;
-	char	*content_s;
-
-	to_free1 = current;
-	to_free2 = current->next;
-	content_s = NULL;
-	if (current->next && current->next->content)
-		content_s = current->next->content->s;
-
-	if (prev)
-		prev->next = current->next->next;
-	else
-		*old = current->next->next;
-	free_nodes(to_free1, to_free2);
-
-	return (create_redircmd(*old, content_s, redir_signal));
-}
-
-struct cmd *parseredir(t_list *lst)
-{
-	t_list	*old;
-	t_list	*prev;
-	t_list	*current;
-	int		redir_signal;
-
-	old = lst;
-	prev = NULL;
-	current = lst;
-	redir_signal = 0;
-	if (!lst)
-		return (NULL);
-
-	while (current)
-	{
-		redir_signal = detect_redirection(current);
-		if (redir_signal != 0)
-			return (handle_redirection(&old, current, prev, redir_signal));
-
-		prev = current;
-		current = current->next;
-	}
-
-	return (parseexec(old));
-}
-
-
-
-
-struct cmd	*parseexec(t_list *lst)
-{
-	struct execcmd	*cmd;
-
-	cmd = malloc(sizeof(*cmd));
-	memset(cmd, 0, sizeof(*cmd));
-	cmd->type = EXEC;
-	cmd->argv = check_path(lst, vars()->path_arg);
-	free_tokens(lst);
-	return ((struct cmd *)cmd);
 }

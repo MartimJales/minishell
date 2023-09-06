@@ -6,13 +6,11 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:04:22 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/04 23:04:23 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/06 02:16:44 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
-
-extern int exit_status;
 
 t_vars	*vars(void)
 {

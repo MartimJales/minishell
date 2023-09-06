@@ -6,13 +6,11 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 13:00:05 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/05 13:58:44 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/06 02:30:25 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
-
-extern int	exit_status;
 
 void	process_quote_state(int *old, int i, int *state, int *space)
 {
@@ -66,7 +64,7 @@ void	process_new_space(int *state, int *space)
 	*space = 0;
 }
 
-void	process_token_conditions(int *old, int *i, int *state, int *space)
+void	token_conditions(int *old, int *i, int *state, int *space)
 {
 	if (elems()->s[*i] == '\'')
 		process_quote_state(old, *i, state, space);
