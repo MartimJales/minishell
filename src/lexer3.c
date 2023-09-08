@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:05:14 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:20:39 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/08 16:02:46 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ t_list	*create_space_token( int state)
 
 	aux = ft_lstnew(NULL);
 	aux->content = malloc(sizeof(t_elems));
-	aux->content->s = strdup(" ");
+	aux->content->s = ft_strdup(" ");
 	aux->content->state = state;
 	return (aux);
 }
@@ -58,7 +58,7 @@ void	add_token(t_list **list, const char *token_str, int state)
 
 	new_node = ft_lstnew(NULL);
 	content = (t_elems *)malloc(sizeof(t_elems));
-	content->s = strdup(token_str);
+	content->s = ft_strdup(token_str);
 	content->state = state;
 	new_node->content = content;
 	if (*list == NULL)

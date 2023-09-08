@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:04:02 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:16:39 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/08 16:02:57 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,60 +19,13 @@ size_t	is_delimiter(const char *s, char **sc, size_t *len)
 	i = 0;
 	while (i < 14)
 	{
-		*len = strlen(sc[i]);
-		if (strncmp(s, sc[i], *len) == 0)
+		*len = ft_strlen(sc[i]);
+		if (ft_strncmp(s, sc[i], *len) == 0)
 			return (1);
 		i++;
 	}
 	*len = 0;
 	return (0);
-}
-
-size_t	next_pos_sc(char const *s, char **sc)
-{
-	size_t	i;
-	size_t	len;
-
-	i = 0;
-	while (s[i])
-	{
-		if (is_delimiter(&s[i], sc, &len))
-			return (i);
-		if (len == 0)
-			i++;
-		else
-			i += len;
-	}
-	return (i);
-}
-
-size_t	string_number_sc(char const *s, char **sc)
-{
-	size_t	i;
-	size_t	num;
-	size_t	flag;
-	size_t	len;
-
-	flag = 0;
-	i = 0;
-	num = 0;
-	while (s[i])
-	{
-		if (is_delimiter(&s[i], sc, &len))
-		{
-			flag = 0;
-			i += len;
-			continue ;
-		}
-		if (!flag)
-			num++;
-		flag = 1;
-		if (len == 0)
-			i++;
-		else
-			i += len;
-	}
-	return (num);
 }
 
 char	*ft_strjoin(char const *s1, char const *s2)
@@ -95,6 +48,48 @@ char	*ft_strjoin(char const *s1, char const *s2)
 		new[i] = s2[i - size1];
 		i++;
 	}
+	new[i] = 0;
+	return (new);
+}
+
+int	ft_strcmp(char *s1, const char *s2)
+{
+	int	i;
+
+	i = 0;
+	while (s1[i] == s2[i] && s1[i] != '\0' && s2[i] != '\0')
+		i++;
+	return (s1[i] - s2[i]);
+}
+
+int	ft_strncmp(const char *s1, const char *s2, size_t n)
+{
+	while ((*s1 || *s2) && n > 0)
+	{
+		if (*s1 != *s2)
+		{
+			return ((unsigned char)*s1 - (unsigned char)*s2);
+		}
+		n--;
+		s1++;
+		s2++;
+	}
+	return (0);
+}
+
+char	*ft_strdup(const char *s)
+{
+	size_t	i;
+	size_t	len;
+	char	*new;
+
+	len = ft_strlen((char *)s);
+	new = malloc(len + 1);
+	if (!new)
+		return (NULL);
+	i = -1;
+	while (s[++i])
+		new[i] = s[i];
 	new[i] = 0;
 	return (new);
 }

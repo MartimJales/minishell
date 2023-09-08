@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:04:22 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:16:44 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/08 15:52:42 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,10 +45,10 @@ int	is_special(const char *str, char **special)
 	i = 0;
 	while (i < vars()->num_sc)
 	{
-		if (strncmp(str, vars()->sc[i], strlen(vars()->sc[i])) == 0)
+		if (ft_strncmp(str, vars()->sc[i], ft_strlen(vars()->sc[i])) == 0)
 		{
 			*special = vars()->sc[i];
-			return (strlen(vars()->sc[i]));
+			return (ft_strlen(vars()->sc[i]));
 		}
 		i++;
 	}

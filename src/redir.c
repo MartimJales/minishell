@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:06:47 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:37:25 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/08 15:49:48 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 
 int	ft_redir_signal(char *s)
 {
-	if (strncmp(">>", s, 2) == 0)
+	if (ft_strncmp(">>", s, 2) == 0)
 		return (APPEND);
-	if (strncmp("<<", s, 2) == 0)
+	if (ft_strncmp("<<", s, 2) == 0)
 		return (HEREDOC);
 	if (*s == '>')
 		return (OUT);

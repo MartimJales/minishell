@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:04:53 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:41:35 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/08 17:13:04 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,12 @@ void	add_variable_to_envp(char *new_var)
 	i = 0;
 	while (i < new_envp_size)
 	{
-		new_envp[i] = strdup(vars()->envp[i]);
+		new_envp[i] = ft_strdup(vars()->envp[i]);
 		if (!new_envp[i])
-			panic("strdup", 1);
+			panic("ft_strdup", 1);
 		i++;
 	}
-	new_envp[new_envp_size] = strdup(new_var);
+	new_envp[new_envp_size] = ft_strdup(new_var);
 	new_envp[new_envp_size + 1] = NULL;
 	i = 0;
 	while (vars()->envp[i++] != NULL)
@@ -53,7 +53,7 @@ int	validate_format(const char *input)
 		return (0);
 	var_length = equal_sign - input;
 	var = malloc(var_length + 1);
-	strncpy(var, input, var_length);
+	ft_strncpy(var, input, var_length);
 	var[var_length] = '\0';
 	i = 0;
 	while (var[i])
@@ -78,11 +78,11 @@ void	update_var_to_envp(char *var, char *new_value)
 	envp = vars()->envp;
 	while (envp[index] != NULL)
 	{
-		if (strncmp(envp[index], var, strlen(var)) == 0 && \
-			envp[index][strlen(var)] == '=')
+		if (ft_strncmp(envp[index], var, ft_strlen(var)) == 0 && \
+			envp[index][ft_strlen(var)] == '=')
 		{
 			free(envp[index]);
-			envp[index] = junta_strings(strdup(var), "=");
+			envp[index] = junta_strings(ft_strdup(var), "=");
 			envp[index] = junta_strings(envp[index], new_value);
 			if (!envp[index])
 			{

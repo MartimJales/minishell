@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:05:09 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:09:55 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/08 15:49:48 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,13 +28,13 @@ current->content->s);
 
 int	is_redir(const char *str)
 {
-	if (strncmp(str, ">>", 2) == 0)
+	if (ft_strncmp(str, ">>", 2) == 0)
 		return (1);
-	if (strncmp(str, "<<", 2) == 0)
+	if (ft_strncmp(str, "<<", 2) == 0)
 		return (1);
-	if (strncmp(str, ">", 1) == 0)
+	if (ft_strncmp(str, ">", 1) == 0)
 		return (1);
-	if (strncmp(str, "<", 1) == 0)
+	if (ft_strncmp(str, "<", 1) == 0)
 		return (1);
 	return (0);
 }
@@ -80,8 +80,8 @@ void	junta_tokens(t_list *lst)
 	cur = lst;
 	while (cur && cur->next)
 	{
-		if (strcmp(cur->content->s, " ") != 0 && \
-strcmp(cur->next->content->s, " ") != 0)
+		if (ft_strcmp(cur->content->s, " ") != 0 && \
+ft_strcmp(cur->next->content->s, " ") != 0)
 		{
 			cur->content->s = \
 junta_strings(cur->content->s, cur->next->content->s);

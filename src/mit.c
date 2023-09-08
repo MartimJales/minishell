@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:05:51 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:36:57 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/08 16:02:46 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ char	**list_to_array(t_list *lst)
 	tmp = lst;
 	while (tmp)
 	{
-		arr[i] = strdup(tmp->content->s);
+		arr[i] = ft_strdup(tmp->content->s);
 		tmp = tmp->next;
 		i++;
 	}

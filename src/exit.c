@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:04:45 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:36:57 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/08 16:41:29 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,14 +67,14 @@ int	exec_exit(struct s_execcmd *ecmd)
 {
 	if (ecmd->argv[1] && ecmd->argv[2])
 	{
-		fprintf(stderr, "exit: too many arguments\n");
+		write(2, "exit: too many arguments\n", 25);
 		exit(127);
 	}
 	if (ecmd->argv[1] == NULL)
 		exit(0);
 	if (!check_num(ecmd->argv[1]))
 	{
-		fprintf(stderr, "exit: numeric argument required\n");
+		write(2, "exit: numeric argument required\n", 32);
 		exit(2);
 	}
 	g_exit_status = ft_atoi(ecmd->argv[1]) % 256;

@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:05:01 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:19:08 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/08 16:02:46 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	init_pipe(void)
 
 void	write_to_pipe_and_cleanup(char *mi)
 {
-	write(vars()->pipefd[1], mi, strlen(mi));
+	write(vars()->pipefd[1], mi, ft_strlen(mi));
 	free(mi);
 }
 
@@ -33,14 +33,14 @@ char	*append_to_multiline(char *mi, char *input_buffer)
 
 	if (mi)
 	{
-		temp = realloc(mi, strlen(mi) + strlen(input_buffer) + 2);
+		temp = realloc(mi, ft_strlen(mi) + ft_strlen(input_buffer) + 2);
 		mi = temp;
 		mi = junta_strings(mi, input_buffer);
 		mi = junta_strings(mi, "\n");
 	}
 	else
 	{
-		mi = strdup(input_buffer);
+		mi = ft_strdup(input_buffer);
 		if (mi == NULL)
 		{
 			perror("Error allocating memory");
@@ -65,7 +65,7 @@ void	heredoc(const char *delimiter)
 		input_buffer = readline(">");
 		if (!input_buffer)
 			break ;
-		if (strcmp(input_buffer, delimiter) == 0)
+		if (ft_strcmp(input_buffer, delimiter) == 0)
 		{
 			if (mi)
 				write_to_pipe_and_cleanup(mi);

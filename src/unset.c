@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:07:00 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:40:21 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/08 17:15:29 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ void	delete_var_from_envp(char *var)
 	envp = vars()->envp;
 	while (envp[index] != NULL)
 	{
-		if (strncmp(envp[index], var, strlen(var)) == 0 && \
-		envp[index][strlen(var)] == '=')
+		if (ft_strncmp(envp[index], var, ft_strlen(var)) == 0 && \
+		envp[index][ft_strlen(var)] == '=')
 		{
 			free(envp[index]);
 			i = index;
@@ -45,8 +45,8 @@ int	var_exists(char **envp, char *var)
 	i = 0;
 	while (envp[i] != NULL)
 	{
-		if (strncmp(envp[i], var, strlen(var)) == 0 && \
-envp[i][strlen(var)] == '=')
+		if (ft_strncmp(envp[i], var, ft_strlen(var)) == 0 && \
+envp[i][ft_strlen(var)] == '=')
 			return (1);
 		i++;
 	}
@@ -72,4 +72,25 @@ int	exec_unset(struct s_execcmd *ecmd)
 		exit(0);
 	}
 	return (0);
+}
+
+char	*ft_strncpy(char *dest, const char *src, unsigned int n)
+{
+	unsigned int	i;
+
+	i = 0;
+	while (src[i] != '\0' && i < n)
+	{
+		dest[i] = src[i];
+		++i;
+	}
+	if (i < n && src[i] == '\0')
+	{
+		while (dest[i] != '\0')
+		{
+			dest[i] = '\0';
+			++i;
+		}
+	}
+	return (dest);
 }

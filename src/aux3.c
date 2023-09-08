@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:04:11 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:16:41 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/08 15:32:36 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,15 +28,15 @@ char	*junta_strings(char *s1, char *s2)
 
 int	is_builtin(char *cmd)
 {
-	if (strcmp("export", cmd) == 0)
+	if (ft_strcmp("export", cmd) == 0)
 		return (1);
-	if (strcmp("cd", cmd) == 0)
+	if (ft_strcmp("cd", cmd) == 0)
 		return (1);
-	if (strcmp("unset", cmd) == 0)
+	if (ft_strcmp("unset", cmd) == 0)
 		return (1);
-	if (strcmp("env", cmd) == 0)
+	if (ft_strcmp("env", cmd) == 0)
 		return (1);
-	if (strcmp("exit", cmd) == 0)
+	if (ft_strcmp("exit", cmd) == 0)
 		return (1);
 	return (0);
 }

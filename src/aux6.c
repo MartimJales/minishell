@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/06 01:43:36 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:41:09 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/08 17:13:37 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ void	process_input(void)
 		tree = parsepipe(vars()->tokens);
 		process_and_execute(tree);
 		free_cmd(tree);
-		exit (g_exit_status);
+		exit(g_exit_status);
 	}
 }
 
@@ -110,10 +110,10 @@ char	**duplicate_envp(char **envp)
 	i = 0;
 	while (envp[i] != NULL)
 	{
-		new_envp[i] = strdup(envp[i]);
+		new_envp[i] = ft_strdup(envp[i]);
 		if (!new_envp[i])
 		{
-			perror("strdup");
+			perror("ft_strdup");
 			exit(1);
 		}
 		i++;

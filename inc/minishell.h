@@ -106,7 +106,6 @@ size_t			ft_strlcpy(char *dst, const char *src, size_t size);
 int				ft_isalnum(int c);
 char			*ft_strnstr(const char *big, const char *little, size_t len);
 size_t			is_delimiter(const char *s, char **sc, size_t *len);
-size_t			next_pos_sc(char const *s, char **sc);
 char			**create_path(char *envp[]);
 char			**check_path(t_list *args, char **path_arg);
 char			*junta_strings(char *s1, char *s2);
@@ -144,6 +143,11 @@ int				is_special(const char *str, char **special);
 void			add_token(t_list **list, const char *token_str, int state);
 int				redir_mode(int redir_signal);
 int				ft_redir_signal(char *s);
+int				ft_strcmp(char *s1, const char *s2);
+int				ft_strncmp(const char *s1, const char *s2, size_t n);
+char			*ft_strdup(const char *s);
+char			*ft_strncpy(char *dest, const char *src, unsigned int n);
+
 
 //MIT functions
 char			**list_to_array(t_list *lst);

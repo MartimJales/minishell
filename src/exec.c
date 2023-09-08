@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 00:16:50 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:40:48 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/08 16:59:56 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,15 +31,15 @@ int	builtin_exec(struct s_cmd *cmd)
 
 int	exec_builtin(struct s_execcmd *ecmd)
 {
-	if (strcmp("export", ecmd->argv[0]) == 0)
+	if (ft_strcmp("export", ecmd->argv[0]) == 0)
 		return (exec_export(ecmd));
-	if (strcmp("env", ecmd->argv[0]) == 0)
+	if (ft_strcmp("env", ecmd->argv[0]) == 0)
 		return (exec_env(0));
-	if (strcmp("unset", ecmd->argv[0]) == 0)
+	if (ft_strcmp("unset", ecmd->argv[0]) == 0)
 		return (exec_unset(ecmd));
-	if (strcmp("cd", ecmd->argv[0]) == 0)
+	if (ft_strcmp("cd", ecmd->argv[0]) == 0)
 		return (exec_cd(ecmd));
-	if (strcmp("exit", ecmd->argv[0]) == 0)
+	if (ft_strcmp("exit", ecmd->argv[0]) == 0)
 		return (exec_exit(ecmd));
 	return (-1);
 }
@@ -52,7 +52,10 @@ void	exec_single_command(struct s_execcmd *ecmd)
 	{
 		execve(ecmd->argv[0], ecmd->argv, vars()->envp);
 		g_exit_status = 127;
-		fprintf(stderr, "%s: command not found\n", ecmd->argv[0]);
+		write(2, ecmd->argv[0], ft_strlen(ecmd->argv[0]));
+		write(2, ": command not found\n", 20);
+		free(vars()->s);
+		free_cmd((struct s_cmd *)ecmd);
 		exit(127);
 	}
 }
@@ -68,5 +71,9 @@ void	exec_tree(struct s_cmd *root)
 	else if (root->type == PIPE)
 		exec_pipe((struct s_pipecmd *)root);
 	else
-		fprintf(stderr, "Unknown cmd type: %d\n", root->type);
+	{
+		write(2, "Unknown cmd type: ", 18);
+		write(2, ft_itoa(root->type), ft_strlen(ft_itoa(root->type)));
+		write(2, "\n", 1);
+	}
 }

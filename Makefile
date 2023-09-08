@@ -41,7 +41,7 @@ SRCS        :=      src/aux.c \
 						  src/dollar.c \
 						  src/free.c \
 
-						  
+
 
 OBJS        := $(SRCS:.c=.o)
 
