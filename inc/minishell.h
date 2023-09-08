@@ -147,6 +147,12 @@ int				ft_strcmp(char *s1, const char *s2);
 int				ft_strncmp(const char *s1, const char *s2, size_t n);
 char			*ft_strdup(const char *s);
 char			*ft_strncpy(char *dest, const char *src, unsigned int n);
+void			*ft_realloc(void *ptr, size_t size);
+void			*ft_memcpy(void *s1, const void *s2, size_t n);
+char			*ft_strchr(const char *s, int c);
+char			*ft_strstr(const char *s1, const char *s2);
+char			*ft_strndup(const char *str, size_t n);
+void			*ft_memset(void *s, int c, size_t n);
 
 
 //MIT functions

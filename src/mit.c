@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:05:51 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/08 16:02:46 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/08 23:26:45 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,9 +90,26 @@ struct s_cmd	*parseexec(t_list *lst)
 	struct s_execcmd	*cmd;
 
 	cmd = malloc(sizeof(*cmd));
-	memset(cmd, 0, sizeof(*cmd));
+	ft_memset(cmd, 0, sizeof(*cmd));
 	cmd->type = EXEC;
 	cmd->argv = check_path(lst, vars()->path_arg);
 	free_tokens(lst);
 	return ((struct s_cmd *)cmd);
+}
+
+void	*ft_memcpy(void *s1, const void *s2, size_t n)
+{
+	size_t	i;
+	char	*dest;
+	char	*src;
+
+	dest = (char *)s1;
+	src = (char *)s2;
+	i = 0;
+	while (i < n)
+	{
+		dest[i] = src[i];
+		i++;
+	}
+	return (dest);
 }

@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:05:19 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:10:12 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/08 23:26:31 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,13 +84,13 @@ t_list	*handle_token_subdivision(char *content, int j, int state)
 	while (subtokens[++i] != NULL)
 	{
 		part = subtokens[i];
-		if (strstr(part, vars()->sc[j]))
+		if (ft_strstr(part, vars()->sc[j]))
 		{
 			add_token(&new_tokens, \
-strndup(part, strstr(part, vars()->sc[j]) - part), state);
+ft_strndup(part, ft_strstr(part, vars()->sc[j]) - part), state);
 			add_token(&new_tokens, vars()->sc[j], state);
 			add_token(&new_tokens, \
-strstr(part, vars()->sc[j]) + ft_strlen(vars()->sc[j]), state);
+ft_strstr(part, vars()->sc[j]) + ft_strlen(vars()->sc[j]), state);
 		}
 		else
 			add_token(&new_tokens, part, state);

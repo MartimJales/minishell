@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:06:47 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/08 15:49:48 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/08 23:16:53 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,3 +50,49 @@ void	exec_redir(struct s_redircmd *rcmd)
 	}
 	exec_tree(rcmd->cmd);
 }
+
+char	*ft_strchr(const char *s, int c)
+{
+	char	ch;
+
+	ch = (char)c;
+	if (s[0] == ch)
+	{
+		return ((char *)s);
+	}
+	while (*s++)
+	{
+		if (*s == ch)
+		{
+			return ((char *)s);
+		}
+	}
+	return (NULL);
+}
+
+char	*ft_strstr(const char *s1, const char *s2)
+{
+	char	*tmp1;
+	char	*tmp2;
+	char	*tmp;
+
+	tmp = (char *)s1;
+	if (!*s2)
+		return ((char *)s1);
+	while (*tmp)
+	{
+		tmp1 = (char *)tmp;
+		tmp2 = (char *)s2;
+		while (*tmp && *tmp2 && *tmp == *tmp2)
+		{
+			tmp++;
+			tmp2++;
+		}
+		if (!*tmp2)
+			return (tmp1);
+		tmp = tmp1 + 1;
+	}
+	return (NULL);
+}
+
+

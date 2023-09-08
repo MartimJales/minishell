@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:05:01 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/08 16:02:46 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/08 23:07:37 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ char	*append_to_multiline(char *mi, char *input_buffer)
 
 	if (mi)
 	{
-		temp = realloc(mi, ft_strlen(mi) + ft_strlen(input_buffer) + 2);
+		temp = ft_realloc(mi, ft_strlen(mi) + ft_strlen(input_buffer) + 2);
 		mi = temp;
 		mi = junta_strings(mi, input_buffer);
 		mi = junta_strings(mi, "\n");

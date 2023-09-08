@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:04:53 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/08 17:13:04 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/08 23:22:21 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ int	validate_format(const char *input)
 	int			i;
 	char		*var;
 
-	equal_sign = strchr(input, '=');
+	equal_sign = ft_strchr(input, '=');
 	if (equal_sign == NULL || equal_sign == input)
 		return (0);
 	var_length = equal_sign - input;

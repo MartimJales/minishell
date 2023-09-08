@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:07:00 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/08 17:15:29 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/08 23:08:22 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,4 +93,17 @@ char	*ft_strncpy(char *dest, const char *src, unsigned int n)
 		}
 	}
 	return (dest);
+}
+
+void	*ft_realloc(void *ptr, size_t size)
+{
+	void	*new_ptr;
+
+	if (ptr == NULL)
+		return (malloc(size));
+	if (!size)
+		return (ptr);
+	new_ptr = malloc(size);
+	ft_memcpy(new_ptr, ptr, size);
+	return (new_ptr);
 }

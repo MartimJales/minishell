@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 09:29:14 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:18:18 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/08 23:23:13 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	exec_env(int declare)
 	{
 		if (declare)
 			printf("declare -x %s=\"%s\"\n", \
-ft_split(vars()->envp[i], '=')[0], strchr(vars()->envp[i], '=') + 1);
+ft_split(vars()->envp[i], '=')[0], ft_strchr(vars()->envp[i], '=') + 1);
 		else
 			printf("%s\n", vars()->envp[i]);
 		i++;
