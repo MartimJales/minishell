@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:06:47 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/08 23:16:53 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/09 00:12:22 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int	redir_mode(int redir_signal)
 	if (redir_signal == OUT)
 		return (O_WRONLY | O_CREAT | O_TRUNC);
 	if (redir_signal == APPEND)
-		return (O_WRONLY | O_CREAT);
+		return (O_WRONLY | O_CREAT | O_APPEND);
 	if (redir_signal == HEREDOC)
 		return (HEREDOC);
 	return (0);
