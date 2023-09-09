@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 14:08:21 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/08 17:13:04 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/09 03:47:32 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,14 +34,24 @@ char	*ft_strcat(char *dest, char *src)
 void	handle_export(char **result, char *str_aux, int *index_result)
 {
 	char	*export;
+	int		flag;
 
+	flag = 0;
 	export = NULL;
 	if (ft_strcmp(str_aux, "?") == 0)
+	{
+		flag = 1;
 		export = ft_itoa(g_exit_status);
+	}
 	else
 		export = exp_dollar(str_aux, vars()->envp);
 	ft_strcat(*result + *index_result, export);
 	*index_result += ft_strlen(export);
+	if (flag)
+	{
+		free(str_aux);
+		free(export);
+	}
 }
 
 char	*create_str_aux(char *input, int i, int j)
@@ -56,7 +66,7 @@ char	*create_str_aux(char *input, int i, int j)
 
 int	update_j(char *input, int j)
 {
-	while (ft_isalnum(input[j]))
+	while (ft_isalnum(input[j]) || input[j] == '_')
 		j++;
 	if (input[j] == '?')
 		j++;
@@ -65,18 +75,17 @@ int	update_j(char *input, int j)
 
 char	*replace_dollar(char *input)
 {
-	size_t	length;
 	char	*result;
 	size_t	i;
 	size_t	j;
 	int		index_result;
 
-	length = ft_strlen(input);
-	result = malloc(length * 10 + 1);
+	result = malloc(2000);
+	memset(result, 0, 2000);
 	result[0] = '\0';
 	index_result = 0;
 	i = -1;
-	while (++i < length)
+	while (++i < ft_strlen(input))
 	{
 		if (input[i] == '$')
 		{

@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:06:47 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/09 00:12:22 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/09 03:41:31 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,5 +94,3 @@ char	*ft_strstr(const char *s1, const char *s2)
 	}
 	return (NULL);
 }
-
-

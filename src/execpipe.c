@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:04:38 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:38:05 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/09 03:40:31 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	child_pipe(int pipefd[2], struct s_pipecmd *pcmd)
 	struct s_redircmd	*rcmd;
 
 	rcmd = (struct s_redircmd *)pcmd->left;
-	if (rcmd->mode != HEREDOC)
+	if (!(pcmd->left->type == REDIR && rcmd->mode == HEREDOC))
 	{
 		close(pipefd[0]);
 		dup2(pipefd[1], STDOUT_FILENO);

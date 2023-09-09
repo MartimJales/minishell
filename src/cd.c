@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:04:28 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/08 16:15:38 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/09 03:29:47 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ int	exec_cd(struct s_execcmd *ecmd)
 		perror("getcwd");
 		return (1);
 	}
-	update_var_to_envp("OLDPWD", ft_strdup(old_path));
-	update_var_to_envp("PWD", ft_strdup(new_path));
+	update_var_to_envp("OLDPWD", old_path);
+	update_var_to_envp("PWD", new_path);
 	return (0);
 }

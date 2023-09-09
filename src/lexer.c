@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 13:58:49 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:30:25 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/09 03:44:41 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ void	lexer(void)
 	old = 0;
 	state = 0;
 	space = 0;
+	elems()->s = vars()->s;
 	while (elems()->s[++i])
 	{
 		token_conditions(&old, &i, &state, &space);

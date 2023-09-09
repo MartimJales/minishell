@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:04:53 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/08 23:22:21 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/09 03:49:19 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,39 +34,8 @@ void	add_variable_to_envp(char *new_var)
 	}
 	new_envp[new_envp_size] = ft_strdup(new_var);
 	new_envp[new_envp_size + 1] = NULL;
-	i = 0;
-	while (vars()->envp[i++] != NULL)
-		free(vars()->envp[i]);
-	free(vars()->envp);
+	free_envp(vars()->envp);
 	vars()->envp = new_envp;
-}
-
-int	validate_format(const char *input)
-{
-	const char	*equal_sign;
-	size_t		var_length;
-	int			i;
-	char		*var;
-
-	equal_sign = ft_strchr(input, '=');
-	if (equal_sign == NULL || equal_sign == input)
-		return (0);
-	var_length = equal_sign - input;
-	var = malloc(var_length + 1);
-	ft_strncpy(var, input, var_length);
-	var[var_length] = '\0';
-	i = 0;
-	while (var[i])
-	{
-		if (!ft_isalnum(var[i]))
-		{
-			free(var);
-			return (0);
-		}
-		i++;
-	}
-	free(var);
-	return (1);
 }
 
 void	update_var_to_envp(char *var, char *new_value)
@@ -109,15 +78,28 @@ int	clean_var(char **var, int status)
 	return (safe_exit(status));
 }
 
+void	clean_var2(char **var)
+{
+	int	i;
+
+	i = 0;
+	while (var[i])
+	{
+		free(var[i]);
+		i++;
+	}
+	free(var);
+}
+
 int	exec_export(struct s_execcmd *ecmd)
 {
 	int		i;
 	char	**var;
 
-	i = 1;
+	i = 0;
 	if (ecmd->argv[1] == NULL)
 		return (exec_env(1));
-	while (ecmd->argv[i] != NULL)
+	while (ecmd->argv[++i] != NULL)
 	{
 		var = ft_split(ecmd->argv[i], '=');
 		if (!check_alnum(var[0]))
@@ -133,7 +115,7 @@ int	exec_export(struct s_execcmd *ecmd)
 			else
 				add_variable_to_envp(ecmd->argv[i]);
 		}
-		i++;
+		clean_var2(var);
 	}
-	return (clean_var(var, EXIT_SUCCESS));
+	return (safe_exit(EXIT_SUCCESS));
 }

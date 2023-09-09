@@ -154,7 +154,6 @@ char			*ft_strstr(const char *s1, const char *s2);
 char			*ft_strndup(const char *str, size_t n);
 void			*ft_memset(void *s, int c, size_t n);
 
-
 //MIT functions
 char			**list_to_array(t_list *lst);
 
@@ -192,5 +191,7 @@ void			free_redircmd(struct s_redircmd *rcmd);
 void			free_pipecmd(struct s_pipecmd *pcmd);
 void			free_list(t_list *lst);
 void			free_cmd(struct s_cmd *command);
+void			free_envp(char **envp);
+int				validate_format(const char *input);
 
 #endif

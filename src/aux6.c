@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/06 01:43:36 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/08 17:13:37 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/09 03:51:04 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,12 +88,11 @@ void	process_input(void)
 			continue ;
 		}
 		add_history(vars()->s);
-		elems()->s = vars()->s;
 		lexer();
 		tree = parsepipe(vars()->tokens);
 		process_and_execute(tree);
 		free_cmd(tree);
-		exit(g_exit_status);
+		free(vars()->s);
 	}
 }
 

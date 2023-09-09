@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:05:01 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/08 23:07:37 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/09 03:49:44 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,4 +79,32 @@ void	heredoc(const char *delimiter)
 	close(vars()->pipefd[1]);
 	dup2(vars()->pipefd[0], STDIN_FILENO);
 	close(vars()->pipefd[0]);
+}
+
+int	validate_format(const char *input)
+{
+	const char	*equal_sign;
+	size_t		var_length;
+	int			i;
+	char		*var;
+
+	equal_sign = ft_strchr(input, '=');
+	if (equal_sign == NULL || equal_sign == input)
+		return (0);
+	var_length = equal_sign - input;
+	var = malloc(var_length + 1);
+	ft_strncpy(var, input, var_length);
+	var[var_length] = '\0';
+	i = 0;
+	while (var[i])
+	{
+		if (!ft_isalnum(var[i]))
+		{
+			free(var);
+			return (0);
+		}
+		i++;
+	}
+	free(var);
+	return (1);
 }
