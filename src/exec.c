@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 00:16:50 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/08 16:59:56 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/10 15:41:54 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ void	exec_single_command(struct s_execcmd *ecmd)
 		write(2, ": command not found\n", 20);
 		free(vars()->s);
 		free_cmd((struct s_cmd *)ecmd);
-		exit(127);
+		exit(g_exit_status);
 	}
 }
 
@@ -76,4 +76,12 @@ void	exec_tree(struct s_cmd *root)
 		write(2, ft_itoa(root->type), ft_strlen(ft_itoa(root->type)));
 		write(2, "\n", 1);
 	}
+}
+
+void	execute_child(struct s_pipecmd *pcmd, int pipefd[])
+{
+	dup2(pipefd[1], STDOUT_FILENO);
+	close(pipefd[0]);
+	close(pipefd[1]);
+	exec_tree(pcmd->left);
 }

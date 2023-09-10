@@ -153,6 +153,7 @@ char			*ft_strchr(const char *s, int c);
 char			*ft_strstr(const char *s1, const char *s2);
 char			*ft_strndup(const char *str, size_t n);
 void			*ft_memset(void *s, int c, size_t n);
+void			execute_child(struct s_pipecmd *pcmd, int pipefd[]);
 
 //MIT functions
 char			**list_to_array(t_list *lst);

@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:06:47 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/09 03:41:31 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/10 15:23:07 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,12 @@ void	exec_redir(struct s_redircmd *rcmd)
 	{
 		close(rcmd->fd);
 		if (open(rcmd->file, rcmd->mode, 0664) < 0)
+		{
+			perror(" No such file or directory\n");
 			g_exit_status = EXIT_FAILURE;
+			exit(EXIT_FAILURE);
+		}
+
 	}
 	exec_tree(rcmd->cmd);
 }

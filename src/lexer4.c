@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:05:19 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/08 23:26:31 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/09 12:05:40 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,12 +71,14 @@ char	**ft_split(char const *s, char c)
 	return (arr);
 }
 
+	//char *s = ft_strndup(part, ft_strstr(part, vars()->sc[j]) - part);
 t_list	*handle_token_subdivision(char *content, int j, int state)
 {
 	t_list	*new_tokens;
 	char	**subtokens;
 	size_t	i;
 	char	*part;
+	char	*s;
 
 	i = -1;
 	subtokens = ft_split(content, ' ');
@@ -86,8 +88,9 @@ t_list	*handle_token_subdivision(char *content, int j, int state)
 		part = subtokens[i];
 		if (ft_strstr(part, vars()->sc[j]))
 		{
-			add_token(&new_tokens, \
-ft_strndup(part, ft_strstr(part, vars()->sc[j]) - part), state);
+			s = ft_strndup(part, ft_strstr(part, vars()->sc[j]) - part);
+			add_token(&new_tokens, s, state);
+			free(s);
 			add_token(&new_tokens, vars()->sc[j], state);
 			add_token(&new_tokens, \
 ft_strstr(part, vars()->sc[j]) + ft_strlen(vars()->sc[j]), state);

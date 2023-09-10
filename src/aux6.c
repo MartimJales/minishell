@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/06 01:43:36 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/09 03:51:04 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/10 15:20:19 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ void	process_and_execute(struct s_cmd *tree)
 		if (WIFEXITED(status))
 			g_exit_status = WEXITSTATUS(status);
 		else
-			printf("Child process did not exit correctly\n");
+			exit(1);
 		g_exit_status = g_exit_status % 256;
 	}
 }
@@ -79,6 +79,8 @@ void	process_input(void)
 		while (vars()->envp[i] != NULL)
 			i++;
 		setup_signals();
+		rl_on_new_line();
+		rl_replace_line("", 0);
 		vars()->s = readline("minishell>");
 		if (vars()->s == NULL)
 			break ;
@@ -89,6 +91,7 @@ void	process_input(void)
 		}
 		add_history(vars()->s);
 		lexer();
+		//print_tokens(vars()->tokens);
 		tree = parsepipe(vars()->tokens);
 		process_and_execute(tree);
 		free_cmd(tree);
