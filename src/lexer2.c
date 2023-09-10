@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer2.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dcordovi <dcordovi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 13:00:05 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/10 15:14:46 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/10 20:05:55 by dcordovi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,6 @@ void	token_conditions(int *old, int *i, int *state, int *space)
 		process_space_state(old, *i, state, space);
 		process_new_space(state, space);
 		token_conditions(old, i, state, space);
-
 	}
 	else if (*space)
 	{

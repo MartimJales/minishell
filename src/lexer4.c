@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer4.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dcordovi <dcordovi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:05:19 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/09 12:05:40 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/10 20:15:17 by dcordovi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,14 +71,57 @@ char	**ft_split(char const *s, char c)
 	return (arr);
 }
 
-	//char *s = ft_strndup(part, ft_strstr(part, vars()->sc[j]) - part);
+//char *s = ft_strndup(part, ft_strstr(part, vars()->sc[j]) - part);
+
+// t_list	*handle_token_subdivision(char *content, int j, int state)
+// {
+// 	t_list	*new_tokens;
+// 	char	**subtokens;
+// 	size_t	i;
+// 	char	*part;
+// 	char	*s;
+
+// 	i = -1;
+// 	subtokens = ft_split(content, ' ');
+// 	new_tokens = NULL;
+// 	while (subtokens[++i] != NULL)
+// 	{
+// 		part = subtokens[i];
+// 		if (ft_strstr(part, vars()->sc[j]))
+// 		{
+// 			s = ft_strndup(part, ft_strstr(part, vars()->sc[j]) - part);
+// 			add_token(&new_tokens, s, state);
+// 			free(s);
+// 			add_token(&new_tokens, vars()->sc[j], state);
+// 			add_token(&new_tokens, ft_strstr(part, vars()->sc[j])
+// + ft_strlen(vars()->sc[j]), state);
+// 		}
+// 		else
+// 			add_token(&new_tokens, part, state);
+// 		free(part);
+// 	}
+// 	free(subtokens);
+// 	return (new_tokens);
+// }
+
+void	process_special_token(t_list **new_tokens, char *part, int j, int state)
+{
+	char	*s;
+
+	s = ft_strndup(part, ft_strstr(part, vars()->sc[j]) - part);
+	add_token(new_tokens, s, state);
+	free(s);
+	add_token(new_tokens, vars()->sc[j], state);
+	add_token(new_tokens, \
+ft_strstr(part, vars()->sc[j]) + ft_strlen(vars()->sc[j]), state);
+}
+
 t_list	*handle_token_subdivision(char *content, int j, int state)
 {
 	t_list	*new_tokens;
 	char	**subtokens;
 	size_t	i;
 	char	*part;
-	char	*s;
 
 	i = -1;
 	subtokens = ft_split(content, ' ');
@@ -88,31 +131,14 @@ t_list	*handle_token_subdivision(char *content, int j, int state)
 		part = subtokens[i];
 		if (ft_strstr(part, vars()->sc[j]))
 		{
-			s = ft_strndup(part, ft_strstr(part, vars()->sc[j]) - part);
-			add_token(&new_tokens, s, state);
-			free(s);
-			add_token(&new_tokens, vars()->sc[j], state);
-			add_token(&new_tokens, \
-ft_strstr(part, vars()->sc[j]) + ft_strlen(vars()->sc[j]), state);
+			process_special_token(&new_tokens, part, j, state);
 		}
 		else
+		{
 			add_token(&new_tokens, part, state);
+		}
 		free(part);
 	}
 	free(subtokens);
-	return (new_tokens);
-}
-
-t_list	*subdivide_current_token(t_list *current, int j)
-{
-	t_list	*new_tokens;
-	int		state;
-
-	new_tokens = NULL;
-	state = current->content->state;
-	if (state == DEF && !is_special(current->content->s, vars()->sc))
-		new_tokens = handle_token_subdivision(current->content->s, j, state);
-	else
-		add_token(&new_tokens, current->content->s, state);
 	return (new_tokens);
 }

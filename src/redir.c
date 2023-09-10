@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redir.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dcordovi <dcordovi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:06:47 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/10 15:23:07 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/10 20:00:10 by dcordovi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ void	exec_redir(struct s_redircmd *rcmd)
 			g_exit_status = EXIT_FAILURE;
 			exit(EXIT_FAILURE);
 		}
-
 	}
 	exec_tree(rcmd->cmd);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dcordovi <dcordovi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 09:29:14 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/08 23:23:13 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/10 20:13:00 by dcordovi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,4 +30,40 @@ ft_split(vars()->envp[i], '=')[0], ft_strchr(vars()->envp[i], '=') + 1);
 	if (vars()->forked)
 		exit(0);
 	return (0);
+}
+
+void	exec_pipe_command(struct s_pipecmd *pcmd)
+{
+	int	pipefd[2];
+
+	if (pipe(pipefd) == -1)
+		panic("pipe", EXIT_FAILURE);
+	execute_parent(pcmd, pipefd);
+	exit(g_exit_status);
+}
+
+void	exec_pipe(struct s_pipecmd *pcmd)
+{
+	if (!pcmd->right)
+		exec_tree(pcmd->left);
+	else
+		exec_pipe_command(pcmd);
+}
+
+int	builtin_pipe(struct s_cmd *cmd)
+{
+	struct s_pipecmd	*pcmd;
+
+	pcmd = (struct s_pipecmd *)cmd;
+	if (pcmd->right)
+		return (0);
+	return (is_builtin_tree(pcmd->left));
+}
+
+void	execute_child(struct s_pipecmd *pcmd, int pipefd[])
+{
+	dup2(pipefd[1], STDOUT_FILENO);
+	close(pipefd[0]);
+	close(pipefd[1]);
+	exec_tree(pcmd->left);
 }

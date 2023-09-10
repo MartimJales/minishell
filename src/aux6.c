@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   aux6.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dcordovi <dcordovi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/06 01:43:36 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/10 18:29:03 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/10 20:11:08 by dcordovi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,60 +68,68 @@ void	process_and_execute(struct s_cmd *tree)
 	}
 }
 
-void	process_input(void)
-{
-	int				i;
-	struct s_cmd	*tree;
+// void	process_input(void)
+// {
+// 	int				i;
+// 	struct s_cmd	*tree;
 
-	while (1)
-	{
-		i = 0;
-		while (vars()->envp[i] != NULL)
-			i++;
-		setup_signals();
-		rl_on_new_line();
-		rl_replace_line("", 0);
-		vars()->s = readline("minishell>");
-		if (vars()->s == NULL)
-			break ;
-		if (all_space(vars()->s))
-		{
-			cleanup();
-			continue ;
-		}
-		add_history(vars()->s);
-		lexer();
-		tree = parsepipe(vars()->tokens);
-		if (tree)
-			process_and_execute(tree);
-		else
-			free_tokens(vars()->tokens);
-		free_cmd(tree);
-		free(vars()->s);
-	}
+// 	while (1)
+// 	{
+// 		i = 0;
+// 		while (vars()->envp[i] != NULL)
+// 			i++;
+// 		setup_signals();
+// 		rl_on_new_line();
+// 		rl_replace_line("", 0);
+// 		vars()->s = readline("minishell>");
+// 		if (vars()->s == NULL)
+// 			break ;
+// 		if (all_space(vars()->s))
+// 		{
+// 			cleanup();
+// 			continue ;
+// 		}
+// 		add_history(vars()->s);
+// 		lexer();
+// 		tree = parsepipe(vars()->tokens);
+// 		if (tree)
+// 			process_and_execute(tree);
+// 		else
+// 			free_tokens(vars()->tokens);
+// 		free_cmd(tree);
+// 		free(vars()->s);
+// 	}
+// }
+
+char	*initialize_and_read_input(void)
+{
+	int	i;
+
+	i = 0;
+	while (vars()->envp[i] != NULL)
+		i++;
+	setup_signals();
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	return (readline("minishell>"));
 }
 
-char	**duplicate_envp(char **envp)
+void	process_and_execute_input(char *input)
 {
-	int		envp_size;
-	int		i;
-	char	**new_envp;
+	struct s_cmd	*tree;
 
-	envp_size = 0;
-	while (envp[envp_size] != NULL)
-		envp_size++;
-	new_envp = (char **)malloc((envp_size + 1) * sizeof(char *));
-	i = 0;
-	while (envp[i] != NULL)
+	if (all_space(input))
 	{
-		new_envp[i] = ft_strdup(envp[i]);
-		if (!new_envp[i])
-		{
-			perror("ft_strdup");
-			exit(1);
-		}
-		i++;
+		cleanup();
+		return ;
 	}
-	new_envp[envp_size] = NULL;
-	return (new_envp);
+	add_history(input);
+	lexer();
+	tree = parsepipe(vars()->tokens);
+	if (tree)
+		process_and_execute(tree);
+	else
+		free_tokens(vars()->tokens);
+	free_cmd(tree);
+	free(input);
 }

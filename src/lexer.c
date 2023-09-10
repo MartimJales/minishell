@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dcordovi <dcordovi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/05 13:58:49 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/09 11:48:53 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/10 20:15:21 by dcordovi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,4 +90,18 @@ void	free_tokens(t_list *lst)
 		current = next;
 	}
 	vars()->tokens = NULL;
+}
+
+t_list	*subdivide_current_token(t_list *current, int j)
+{
+	t_list	*new_tokens;
+	int		state;
+
+	new_tokens = NULL;
+	state = current->content->state;
+	if (state == DEF && !is_special(current->content->s, vars()->sc))
+		new_tokens = handle_token_subdivision(current->content->s, j, state);
+	else
+		add_token(&new_tokens, current->content->s, state);
+	return (new_tokens);
 }

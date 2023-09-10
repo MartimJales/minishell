@@ -154,6 +154,14 @@ char			*ft_strstr(const char *s1, const char *s2);
 char			*ft_strndup(const char *str, size_t n);
 void			*ft_memset(void *s, int c, size_t n);
 void			execute_child(struct s_pipecmd *pcmd, int pipefd[]);
+char			*initialize_and_read_input(void);
+void			process_and_execute_input(char *input);
+t_list			*handle_token_subdivision(char *content, int j, int state);
+void			execute_parent(struct s_pipecmd *pcmd, int pipefd[]);
+void			init_pipe(void);
+void			write_to_pipe_and_cleanup(char *mi);
+char			*append_to_multiline(char *mi, char *input_buffer);
+void			heredoc_signals(void);
 
 //MIT functions
 char			**list_to_array(t_list *lst);

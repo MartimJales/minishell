@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dcordovi <dcordovi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 00:16:50 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/10 16:37:53 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/10 20:12:56 by dcordovi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,6 @@ int	isdirectory(const char *path)
 		perror("stat");
 		return (0);
 	}
-
 	if (S_ISREG(path_stat.st_mode))
 	{
 		return (0);
@@ -106,12 +105,4 @@ void	exec_tree(struct s_cmd *root)
 		write(2, ft_itoa(root->type), ft_strlen(ft_itoa(root->type)));
 		write(2, "\n", 1);
 	}
-}
-
-void	execute_child(struct s_pipecmd *pcmd, int pipefd[])
-{
-	dup2(pipefd[1], STDOUT_FILENO);
-	close(pipefd[0]);
-	close(pipefd[1]);
-	exec_tree(pcmd->left);
 }

@@ -40,6 +40,7 @@ SRCS        :=      src/aux.c \
 						  src/junta_tokens.c \
 						  src/dollar.c \
 						  src/free.c \
+						  src/heredoc2.c \
 
 
 

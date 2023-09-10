@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dcordovi <dcordovi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:05:01 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/10 18:18:31 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/10 20:21:00 by dcordovi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,6 @@ void	signal_hd(int sig)
 {
 	if (sig == 2 || sig == SIGQUIT)
 	{
-		//rl_on_new_line();
-		//rl_replace_line("", 0);
 		clear_history();
 		exit (1);
 	}
@@ -67,51 +65,4 @@ void	heredoc_signals(void)
 {
 	signal(SIGINT, signal_hd);
 	signal(SIGQUIT, signal_hd);
-}
-
-void	heredoc(const char *delimiter)
-{
-	char	*input_buffer;
-	char	*mi;
-
-	input_buffer = NULL;
-	mi = NULL;
-	init_pipe();
-	while (1)
-	{
-		heredoc_signals();
-		input_buffer = readline(">");
-		if (!input_buffer)
-			break ;
-		if (ft_strcmp(input_buffer, delimiter) == 0)
-		{
-			if (mi)
-				write_to_pipe_and_cleanup(mi);
-			free(input_buffer);
-			break ;
-		}
-		mi = append_to_multiline(mi, input_buffer);
-		add_history(input_buffer);
-		free(input_buffer);
-	}
-	close(vars()->pipefd[1]);
-	dup2(vars()->pipefd[0], STDIN_FILENO);
-	close(vars()->pipefd[0]);
-}
-
-int validate_format(const char *input) {
-    const char *equal_sign = strchr(input, '=');
-
-    if (equal_sign == NULL || equal_sign == input) {
-        return 0;
-    }
-
-    size_t var_length = equal_sign - input;
-
-    for (size_t i = 0; i < var_length; i++) {
-        if (!ft_isalnum(input[i])) {
-            return 0;
-        }
-    }
-    return 1;
 }

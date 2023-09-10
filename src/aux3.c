@@ -3,16 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   aux3.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dcordovi <dcordovi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:04:11 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/10 17:02:50 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/10 18:52:41 by dcordovi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
-
-//
 
 char	*junta_strings(char *s1, char *s2)
 {
