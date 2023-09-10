@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/21 00:14:27 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/09 03:23:03 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/10 18:26:21 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ struct s_cmd	*parsepipe(t_list *lst)
 	t_list			*begin;
 
 	begin = lst;
-	if (!lst)
+	if (!lst || *(ft_lstlast(vars()->tokens)->content->s) == '|')
 		return (NULL);
 	while (lst->next && *(lst->next->content->s) != '|')
 		lst = lst->next;

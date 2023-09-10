@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/24 12:28:03 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:16:37 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/10 16:59:15 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,8 @@ size_t	ft_strlcpy(char *dst, const char *src, size_t size)
 
 int	ft_isalnum(int c)
 {
-	if ((c < 'a' || c > 'z') && (c < 'A' || c > 'Z') && (c < '0' || c > '9'))
+	if ((c < 'a' || c > 'z') && (c < 'A' || c > 'Z') && (c < '0' || c > '9') \
+	&& c != '_')
 		return (0);
 	return (1);
 }

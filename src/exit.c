@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:04:45 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/08 16:41:29 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/10 17:57:16 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ void	free_envp(char **envp)
 
 int	exec_exit(struct s_execcmd *ecmd)
 {
+	clear_history();
 	if (ecmd->argv[1] && ecmd->argv[2])
 	{
 		write(2, "exit: too many arguments\n", 25);

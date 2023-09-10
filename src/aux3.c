@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:04:11 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/10 12:05:56 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/10 17:02:50 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,7 @@ void	signal_cmd(int sig)
 	if (sig == SIGQUIT)
 	{
 		write(2, "Quit (core dumped)\n", ft_strlen("Quit (core dumped)\n"));
+		clear_history();
 		exit (1);
 	}
 }

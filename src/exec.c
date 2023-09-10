@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 00:16:50 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/10 15:41:54 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/10 16:37:53 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,30 @@ int	exec_builtin(struct s_execcmd *ecmd)
 	return (-1);
 }
 
+int	isdirectory(const char *path)
+{
+	struct stat	path_stat;
+
+	if (stat(path, &path_stat) != 0)
+	{
+		perror("stat");
+		return (0);
+	}
+
+	if (S_ISREG(path_stat.st_mode))
+	{
+		return (0);
+	}
+	else if (S_ISDIR(path_stat.st_mode))
+	{
+		return (1);
+	}
+	else
+	{
+		return (0);
+	}
+}
+
 void	exec_single_command(struct s_execcmd *ecmd)
 {
 	if (!ecmd->argv[0])
@@ -51,6 +75,12 @@ void	exec_single_command(struct s_execcmd *ecmd)
 	if (exec_builtin(ecmd) == -1)
 	{
 		execve(ecmd->argv[0], ecmd->argv, vars()->envp);
+		if (isdirectory(ecmd->argv[0]))
+		{
+			g_exit_status = 126;
+			write(2, " Is a directory\n", ft_strlen(" Is a directory\n"));
+			exit(g_exit_status);
+		}
 		g_exit_status = 127;
 		write(2, ecmd->argv[0], ft_strlen(ecmd->argv[0]));
 		write(2, ": command not found\n", 20);

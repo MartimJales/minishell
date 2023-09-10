@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:05:01 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/09 03:49:44 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/10 18:18:31 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,23 @@ char	*append_to_multiline(char *mi, char *input_buffer)
 	return (mi);
 }
 
+void	signal_hd(int sig)
+{
+	if (sig == 2 || sig == SIGQUIT)
+	{
+		//rl_on_new_line();
+		//rl_replace_line("", 0);
+		clear_history();
+		exit (1);
+	}
+}
+
+void	heredoc_signals(void)
+{
+	signal(SIGINT, signal_hd);
+	signal(SIGQUIT, signal_hd);
+}
+
 void	heredoc(const char *delimiter)
 {
 	char	*input_buffer;
@@ -62,6 +79,7 @@ void	heredoc(const char *delimiter)
 	init_pipe();
 	while (1)
 	{
+		heredoc_signals();
 		input_buffer = readline(">");
 		if (!input_buffer)
 			break ;
@@ -81,30 +99,19 @@ void	heredoc(const char *delimiter)
 	close(vars()->pipefd[0]);
 }
 
-int	validate_format(const char *input)
-{
-	const char	*equal_sign;
-	size_t		var_length;
-	int			i;
-	char		*var;
+int validate_format(const char *input) {
+    const char *equal_sign = strchr(input, '=');
 
-	equal_sign = ft_strchr(input, '=');
-	if (equal_sign == NULL || equal_sign == input)
-		return (0);
-	var_length = equal_sign - input;
-	var = malloc(var_length + 1);
-	ft_strncpy(var, input, var_length);
-	var[var_length] = '\0';
-	i = 0;
-	while (var[i])
-	{
-		if (!ft_isalnum(var[i]))
-		{
-			free(var);
-			return (0);
-		}
-		i++;
-	}
-	free(var);
-	return (1);
+    if (equal_sign == NULL || equal_sign == input) {
+        return 0;
+    }
+
+    size_t var_length = equal_sign - input;
+
+    for (size_t i = 0; i < var_length; i++) {
+        if (!ft_isalnum(input[i])) {
+            return 0;
+        }
+    }
+    return 1;
 }

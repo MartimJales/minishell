@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/06 01:47:10 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/06 02:38:05 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/10 16:44:50 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,8 @@ void	free_redircmd(struct s_redircmd *rcmd)
 {
 	if (!rcmd)
 		return ;
-	free_cmd(rcmd->cmd);
+	if (rcmd->cmd)
+		free_cmd(rcmd->cmd);
 	free(rcmd->file);
 	free(rcmd);
 }

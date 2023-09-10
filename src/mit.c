@@ -6,7 +6,7 @@
 /*   By: mjales <mjales@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/04 23:05:51 by mjales            #+#    #+#             */
-/*   Updated: 2023/09/09 03:23:14 by mjales           ###   ########.fr       */
+/*   Updated: 2023/09/10 17:58:50 by mjales           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,12 +44,12 @@ char	**list_to_array(t_list *lst)
 struct s_cmd	*handle_redirection(t_list **old, \
 t_list *current, t_list *prev, int redir_signal)
 {
-	t_list	*to_free1;
-	t_list	*to_free2;
+	//t_list	*to_free1;
+	//t_list	*to_free2;
 	char	*content_s;
 
-	to_free1 = current;
-	to_free2 = current->next;
+	//to_free1 = current;
+	//to_free2 = current->next;
 	content_s = NULL;
 	if (current->next && current->next->content)
 		content_s = current->next->content->s;
@@ -57,7 +57,7 @@ t_list *current, t_list *prev, int redir_signal)
 		prev->next = current->next->next;
 	else
 		*old = current->next->next;
-	free_nodes(to_free1, to_free2);
+	//free_nodes(to_free1, to_free2);
 	return (create_redircmd(*old, content_s, redir_signal));
 }
 
@@ -73,7 +73,9 @@ struct s_cmd	*parseredir(t_list *lst)
 	current = lst;
 	redir_signal = 0;
 	if (!lst)
+	{
 		return (NULL);
+	}
 	while (current)
 	{
 		redir_signal = detect_redirection(current);
